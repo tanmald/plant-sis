@@ -32,3 +32,4 @@ dist-ssr
 
 # PWA
 dev-dist
+.vercel

@@ -39,55 +39,122 @@
 
 /* Component Styles */
 @layer components {
+  /* Modern Gradient Buttons */
   .btn-primary {
-    @apply bg-primary text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 touch-target;
+    @apply relative overflow-hidden
+           bg-gradient-to-r from-forest-500 to-forest-600
+           text-white font-bold py-3.5 px-6 rounded-2xl
+           shadow-soft hover:shadow-soft-lg
+           transition-all duration-300 touch-target
+           active:scale-95 hover:scale-[1.02];
   }
 
-  .btn-primary:hover:not(:disabled) {
-    @apply brightness-110;
-  }
-
-  .btn-primary:active:not(:disabled) {
-    @apply brightness-90;
+  .btn-primary::before {
+    content: '';
+    @apply absolute inset-0 bg-white opacity-0 hover:opacity-10 transition-opacity duration-300;
   }
 
   .btn-primary:disabled {
-    @apply opacity-50 cursor-not-allowed;
+    @apply opacity-50 cursor-not-allowed hover:scale-100;
   }
 
   .btn-secondary {
-    @apply bg-white text-primary border-2 border-primary font-semibold py-3 px-6 rounded-lg transition-all duration-200 touch-target;
+    @apply bg-white text-forest-600 border-2 border-forest-500
+           font-bold py-3.5 px-6 rounded-2xl shadow-soft
+           hover:bg-forest-50 hover:shadow-soft-lg
+           transition-all duration-300 touch-target
+           active:scale-95 hover:scale-[1.02];
   }
 
-  .btn-secondary:hover:not(:disabled) {
-    @apply bg-primary bg-opacity-5;
+  .btn-ghost {
+    @apply text-forest-600 font-semibold py-2 px-4 rounded-xl
+           hover:bg-forest-50 transition-all duration-200
+           active:scale-95;
   }
 
-  .input-field {
-    @apply w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary transition-colors touch-target;
+  /* Glass Card System */
+  .card-glass {
+    @apply bg-white/80 backdrop-blur-md rounded-3xl shadow-glass
+           border border-white/20 overflow-hidden;
   }
 
-  .input-field:focus {
-    @apply ring-2 ring-primary ring-opacity-20;
+  .card-solid {
+    @apply bg-white rounded-3xl shadow-soft overflow-hidden;
   }
 
+  .card-bento {
+    @apply bg-white rounded-2xl shadow-soft p-4
+           hover:shadow-soft-lg transition-all duration-300
+           active:scale-[0.98];
+  }
+
+  /* Legacy card for backwards compatibility */
   .card {
     @apply bg-white rounded-xl shadow-md overflow-hidden;
   }
 
+  /* Modern Input System */
+  .input-field {
+    @apply w-full px-4 py-3.5 bg-white border-2 border-charcoal-200
+           rounded-2xl font-medium
+           focus:outline-none focus:border-forest-500 focus:ring-4 focus:ring-forest-500/10
+           transition-all duration-200 touch-target
+           placeholder:text-charcoal-400;
+  }
+
+  /* Icon Button */
+  .icon-btn {
+    @apply w-12 h-12 flex items-center justify-center rounded-2xl
+           bg-white shadow-soft hover:shadow-soft-lg
+           transition-all duration-200 active:scale-95
+           text-charcoal-700;
+  }
+
+  /* Status Badge */
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full
+           text-sm font-semibold;
+  }
+
+  .status-badge.healthy {
+    @apply bg-gradient-to-r from-sage-400 to-sage-500 text-white;
+  }
+
+  .status-badge.warning {
+    @apply bg-gradient-to-r from-sunset-400 to-sunset-500 text-white;
+  }
+
+  .status-badge.neutral {
+    @apply bg-charcoal-200 text-charcoal-700;
+  }
+
+  /* Gradient Backgrounds */
+  .gradient-forest {
+    @apply bg-gradient-to-br from-forest-500 via-forest-600 to-sage-600;
+  }
+
+  .gradient-sunset {
+    @apply bg-gradient-to-br from-sunset-400 via-sunset-500 to-sunset-600;
+  }
+
+  .gradient-glow {
+    @apply bg-gradient-to-br from-glow-purple via-glow-pink to-glow-blue;
+  }
+
+  /* Sassy Messages */
   .sassy-message {
     @apply p-4 rounded-lg font-medium;
   }
 
   .sassy-message.positive {
-    @apply bg-success bg-opacity-10 text-success;
+    @apply bg-sage-500 bg-opacity-10 text-sage-700;
   }
 
   .sassy-message.neutral {
-    @apply bg-gray-100 text-gray-700;
+    @apply bg-charcoal-100 text-charcoal-700;
   }
 
   .sassy-message.concern {
-    @apply bg-warning bg-opacity-10 text-warning;
+    @apply bg-sunset-500 bg-opacity-10 text-sunset-700;
   }
 }

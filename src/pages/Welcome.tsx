@@ -1,61 +1,66 @@
 import { useNavigate } from 'react-router-dom'
+import { Camera, Sparkles, Heart } from 'lucide-react'
 
 export default function Welcome() {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
-      {/* Plant Icon */}
-      <div className="text-8xl mb-8">🌿</div>
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-b from-cream via-cream to-sage-50">
+      {/* Plant Icon with animation */}
+      <div className="text-8xl mb-8 animate-bounce-soft">🌿</div>
 
       {/* App Name */}
-      <h1 className="text-4xl font-bold text-primary mb-2">PlantSis</h1>
-      <p className="text-lg text-gray-600 mb-12">Your sassy plant care companion</p>
+      <h1 className="text-5xl md:text-6xl font-black text-forest-600 mb-3 text-center">PlantSis</h1>
+      <p className="text-xl text-charcoal-600 mb-16 text-center max-w-md">
+        Your plant bestie with zero judgment and all the vibes
+      </p>
 
-      {/* Welcome Message */}
-      <div className="max-w-md text-center mb-12">
-        <h2 className="text-2xl font-bold text-text mb-4">Hey 🌿 I'm PlantSis</h2>
-        <p className="text-lg text-gray-700 mb-8">
-          I help you keep plants alive, happy, and drama-free. You bring the plants — I'll bring
-          the common sense.
-        </p>
+      {/* Value Props - Glass Cards */}
+      <div className="w-full max-w-md space-y-4 mb-16 animate-slide-up">
+        <div className="card-glass p-5 flex items-start gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-forest-400 to-forest-600 flex items-center justify-center flex-shrink-0">
+            <Camera className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="font-bold text-forest-900 text-lg">Snap & identify your plant babies</p>
+            <p className="text-sm text-charcoal-600 mt-1">Take a photo, I'll tell you what it is</p>
+          </div>
+        </div>
 
-        {/* Value Props */}
-        <div className="space-y-4 text-left">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">📸</span>
-            <div>
-              <p className="font-medium text-text">Snap a photo → I'll ID your plant</p>
-            </div>
+        <div className="card-glass p-5 flex items-start gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sage-400 to-sage-600 flex items-center justify-center flex-shrink-0">
+            <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">👀</span>
-            <div>
-              <p className="font-medium text-text">Quick check-ins → I'll tell you what to do</p>
-            </div>
+          <div className="flex-1">
+            <p className="font-bold text-forest-900 text-lg">Get the tea on what they need</p>
+            <p className="text-sm text-charcoal-600 mt-1">Quick check-ins, expert guidance</p>
           </div>
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">💚</span>
-            <div>
-              <p className="font-medium text-text">No judgment, just good vibes</p>
-            </div>
+        </div>
+
+        <div className="card-glass p-5 flex items-start gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sunset-400 to-sunset-600 flex items-center justify-center flex-shrink-0">
+            <Heart className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="font-bold text-forest-900 text-lg">Zero judgment, pure support</p>
+            <p className="text-sm text-charcoal-600 mt-1">We all forget to water sometimes</p>
           </div>
         </div>
       </div>
 
       {/* CTA Buttons */}
-      <div className="w-full max-w-md space-y-4">
+      <div className="w-full max-w-md space-y-3">
         <button
           onClick={() => navigate('/signup')}
           className="btn-primary w-full"
         >
-          Let's Start
+          Let's Do This ✨
         </button>
         <button
           onClick={() => navigate('/login')}
-          className="text-primary font-medium w-full py-2"
+          className="btn-ghost w-full"
         >
-          I already have an account
+          Already vibing with us? Log in
         </button>
       </div>
     </div>
