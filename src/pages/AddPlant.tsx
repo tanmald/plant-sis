@@ -95,7 +95,7 @@ export default function AddPlant() {
           >
             ←
           </button>
-          <h1 className="text-2xl font-bold text-primary">Add Plant</h1>
+          <h1 className="text-2xl font-bold text-primary">Introduce Me to Your Plant</h1>
         </div>
       </div>
 
@@ -111,7 +111,7 @@ export default function AddPlant() {
         {/* Photo Upload */}
         <div>
           <label className="block text-sm font-medium text-text mb-2">
-            Plant Photo <span className="text-gray-500">(optional)</span>
+            Got a pic? 📸 <span className="text-gray-500">(optional)</span>
           </label>
           <ImageUploader
             onImageSelect={setPhotoFile}
@@ -122,7 +122,7 @@ export default function AddPlant() {
         {/* Custom Name */}
         <div>
           <label htmlFor="customName" className="block text-sm font-medium text-text mb-2">
-            Give your plant a name <span className="text-error">*</span>
+            Give this plant a name <span className="text-error">*</span>
           </label>
           <input
             id="customName"
@@ -134,13 +134,13 @@ export default function AddPlant() {
             required
             maxLength={50}
           />
-          <p className="text-xs text-gray-500 mt-1">Something you'll remember 🌿</p>
+          <p className="text-xs text-gray-500 mt-1">Something you'll actually remember</p>
         </div>
 
         {/* Species Name */}
         <div>
           <label htmlFor="speciesName" className="block text-sm font-medium text-text mb-2">
-            Species (Scientific or Common)
+            What kinda plant is this?
           </label>
           <input
             id="speciesName"
@@ -152,14 +152,14 @@ export default function AddPlant() {
             maxLength={100}
           />
           <p className="text-xs text-gray-500 mt-1">
-            Not sure? We'll add AI identification soon 👀
+            Not sure? No stress — AI help coming soon 👀
           </p>
         </div>
 
         {/* Location */}
         <div>
           <label htmlFor="location" className="block text-sm font-medium text-text mb-2">
-            Where does it live? <span className="text-error">*</span>
+            Where's this one living? <span className="text-error">*</span>
           </label>
           <input
             id="location"
@@ -176,7 +176,7 @@ export default function AddPlant() {
         {/* Light Type */}
         <div>
           <label className="block text-sm font-medium text-text mb-3">
-            Light conditions <span className="text-error">*</span>
+            What's the light situation? <span className="text-error">*</span>
           </label>
           <div className="space-y-2">
             <label className="flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer hover:border-primary transition-colors">
@@ -190,7 +190,7 @@ export default function AddPlant() {
               />
               <div>
                 <div className="font-medium text-text">☀️ Direct</div>
-                <div className="text-sm text-gray-600">Full sun most of the day</div>
+                <div className="text-sm text-gray-600">Direct sun, most of the day</div>
               </div>
             </label>
 
@@ -205,7 +205,7 @@ export default function AddPlant() {
               />
               <div>
                 <div className="font-medium text-text">🌤️ Indirect</div>
-                <div className="text-sm text-gray-600">Bright but filtered light</div>
+                <div className="text-sm text-gray-600">Bright, but no direct blasting</div>
               </div>
             </label>
 
@@ -220,7 +220,7 @@ export default function AddPlant() {
               />
               <div>
                 <div className="font-medium text-text">🌥️ Low</div>
-                <div className="text-sm text-gray-600">Minimal natural light</div>
+                <div className="text-sm text-gray-600">Low light, kinda dim</div>
               </div>
             </label>
           </div>
@@ -250,7 +250,7 @@ export default function AddPlant() {
             disabled={loading}
             className="btn-primary w-full"
           >
-            {loading ? 'Adding Plant...' : 'Save Plant'}
+            {loading ? 'Adding Plant...' : 'Add This Plant'}
           </button>
 
           <button
@@ -259,7 +259,7 @@ export default function AddPlant() {
             disabled={loading}
             className="btn-secondary w-full"
           >
-            Cancel
+            Nah, Go Back
           </button>
         </div>
       </form>

@@ -218,9 +218,9 @@ export default function PlantDetail() {
 
         {/* Check-In History Placeholder */}
         <div className="card p-6">
-          <h2 className="text-lg font-bold text-text mb-2">Check-In History</h2>
+          <h2 className="text-lg font-bold text-text mb-2">What We've Noticed</h2>
           <p className="text-gray-600 text-sm">
-            No check-ins yet. Start your first check-in to track your plant's health!
+            Nothing logged yet — hit that check-in button when you're ready 👆
           </p>
         </div>
       </div>

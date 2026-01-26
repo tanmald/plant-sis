@@ -13,8 +13,11 @@ Mobile application (iOS / Android, mobile-first)
 ### Product Vision
 Create a conversational, context-aware plant care companion with a confident, slightly sassy personality that helps people keep their houseplants healthy by guiding observation, timing, and decisions — without rigid schedules or guilt.
 
-> **Vision Statement**  
+> **Vision Statement**
 Help people care for their plants with confidence by turning plant care into an intuitive, human-like conversation — supportive, honest, and a little bit sassy.
+
+> **Development Note**
+PlantSis is being built incrementally, with foundational features (plant management, AI identification) implemented before conversational care features (guided check-ins, smart reminders). This ensures a solid technical foundation while delivering immediate user value. See Section 2.1 for current implementation status.
 
 ---
 
@@ -29,6 +32,41 @@ Current plant care solutions:
 - Trigger action too late, when the plant is already stressed
 
 As a result, users feel anxious, guilty, or frustrated, abandon apps, and lose plants despite good intentions.
+
+---
+
+## 2.1 Current Status & Roadmap
+
+### Implementation Status
+PlantSis is being built incrementally, prioritizing foundational infrastructure and user experience before implementing the full conversational care system described in this PRD.
+
+**Currently Implemented (Phases 1-3):**
+- ✅ Progressive Web App (PWA) foundation with React, Vite, and Tailwind CSS
+- ✅ Supabase authentication and database infrastructure
+- ✅ Plant management: Add, view, edit, and delete plants
+- ✅ Photo uploads with compression and timeline display
+- ✅ Plant profiles with location and environment attributes
+- ✅ Basic UI with responsive mobile-first design
+
+**In Development (Phase 4):**
+- 🚧 AI-powered plant identification using OpenAI Vision API
+
+**Planned (Phases 5-9):**
+- 📋 Guided check-in flows (core conversational feature)
+- 📋 Smart reminders and notifications
+- 📋 Recommendation engine
+- 📋 PWA configuration (offline support, install prompts)
+- 📋 Premium features and monetization
+- 📋 Polish and launch
+
+### Development Philosophy
+The current build follows an incremental approach:
+1. **Foundation first:** Establish reliable infrastructure, authentication, and data management
+2. **User value early:** Enable plant tracking and photo documentation immediately
+3. **AI enhancement:** Add plant identification to reduce onboarding friction
+4. **Conversational features:** Implement guided check-ins and recommendations once foundation is solid
+
+This approach ensures each phase delivers working functionality while building toward the full vision described in this PRD.
 
 ---
 
@@ -121,7 +159,7 @@ PlantSis helps users care for plants by:
 
 ## 8. Core Features (MVP Scope)
 
-### 8.1 Plant Profile
+### 8.1 Plant Profile ✅ Partially Implemented
 
 Each plant includes:
 - Custom plant name
@@ -134,7 +172,7 @@ Each plant includes:
 
 ---
 
-### 8.2 Location & Environment Context (Manual – MVP)
+### 8.2 Location & Environment Context (Manual – MVP) ✅ Implemented
 
 User-defined attributes:
 - Light type (direct / indirect / low)
@@ -148,7 +186,7 @@ The system interprets:
 
 ---
 
-### 8.3 Guided Plant Check-ins (Core Feature)
+### 8.3 Guided Plant Check-ins (Core Feature) 📋 Planned (Phase 5)
 
 PlantSis does **not** function as a chat. Instead, it runs structured, guided check-ins per plant, based on a practical care framework.
 
@@ -187,7 +225,7 @@ Responses are collected via toggles, sliders, and quick selections — not free 
 
 ---
 
-### 8.4 Smart Reminders
+### 8.4 Smart Reminders 📋 Planned (Phase 7)
 
 Reminder logic based on:
 - Plant type
@@ -201,7 +239,7 @@ Examples:
 
 ---
 
-### 8.5 Recommendation Engine (Rule-Based – MVP)
+### 8.5 Recommendation Engine (Rule-Based – MVP) 📋 Planned (Phase 5)
 
 Delivers guidance such as:
 - Water now / wait
@@ -408,6 +446,94 @@ I help you keep plants alive, happy, and drama-free. You bring the plants — I�
 - Power users → more direct, slightly bolder tone
 - Repeated misses → softer language, fewer nudges
 - Success streaks → celebratory, affirming tone
+
+---
+
+## 18. Development Roadmap
+
+PlantSis is being built across multiple phases, with each phase delivering working functionality while building toward the complete vision.
+
+### Phase 1: Foundation & Setup ✅ Complete
+- React + Vite + Tailwind CSS setup
+- PWA structure and routing
+- Basic UI components and layout
+- Authentication UI screens
+
+### Phase 2: Supabase Setup & Authentication ✅ Complete
+- Supabase project configuration
+- Database schema (plants, plant_photos tables)
+- Row-level security policies
+- Authentication flows (login, signup, logout)
+- Storage buckets for images
+
+### Phase 3: Core Plant Management UI ✅ Complete
+- Add plants with photos
+- Plant list and detail views
+- Edit and delete plants
+- Image upload with compression
+- Photo timeline display
+- Plant profiles (name, species, location, light, proximity)
+
+### Phase 4: AI Plant Identification 🚧 In Development
+- OpenAI Vision API integration
+- Photo analysis for species identification
+- Confidence scoring
+- User confirmation flow
+- Fallback to manual entry
+
+### Phase 5: Guided Check-ins 📋 Planned
+- Check-in flow UI (structured, not chat)
+- Multi-section check-in framework:
+  - Light assessment
+  - Watering checks
+  - Substrate & pot evaluation
+  - Humidity context
+  - Nutrition tracking
+  - Physical signals observation
+  - Support & structure needs
+- Check-in history and timeline
+- Recommendation engine (rule-based MVP)
+
+### Phase 6: PWA Configuration 📋 Planned
+- Service worker implementation
+- Offline support
+- Install prompt
+- App icons and splash screens
+- Manifest configuration
+
+### Phase 7: Smart Reminders 📋 Planned
+- Notification system
+- Context-aware reminder logic:
+  - Plant type
+  - Last interaction
+  - Seasonality
+  - Light exposure
+- Adaptive notification frequency
+- User preferences
+
+### Phase 8: Monetization 📋 Planned
+- Premium feature identification
+- Subscription infrastructure
+- Payment integration
+- Feature gating
+- Free tier limits
+
+### Phase 9: Polish & Launch 📋 Planned
+- Performance optimization
+- Cross-browser testing
+- Analytics integration
+- User feedback collection
+- App store submission (if applicable)
+- Marketing materials
+
+### Future Enhancements (Post-Launch)
+- AI-based visual plant health analysis
+- Seasonal intelligence and predictions
+- Environment auto-detection
+- Plant-sitting mode (vacation care)
+- Predictive health insights
+- Social/community features
+- IoT sensor integration
 
 ---
 

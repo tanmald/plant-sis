@@ -98,9 +98,9 @@ export default function Home() {
           // Empty State
           <div className="text-center py-16">
             <div className="text-8xl mb-6">🪴</div>
-            <h2 className="text-2xl font-bold text-text mb-3">Add your first plant 🌿</h2>
+            <h2 className="text-2xl font-bold text-text mb-3">Let's add your first plant 🌿</h2>
             <p className="text-gray-600 mb-8">
-              Let's get started! Snap a photo or add manually.
+              Snap a photo and I'll help you keep it thriving.
             </p>
             <button
               onClick={() => navigate('/add-plant')}
@@ -135,7 +135,7 @@ export default function Home() {
                     <p className="text-sm text-gray-600 truncate">{plant.species_name}</p>
                   )}
                   <div className="mt-2 text-xs text-gray-500">
-                    💚 Healthy
+                    💚 Looking good
                   </div>
                 </div>
               </div>

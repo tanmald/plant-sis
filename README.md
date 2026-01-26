@@ -69,8 +69,8 @@ plant-sis/
 ## Development Phases
 
 - [x] Phase 1: Foundation & Setup
-- [ ] Phase 2: Supabase Setup & Authentication
-- [ ] Phase 3: Core Plant Management UI
+- [x] Phase 2: Supabase Setup & Authentication
+- [x] Phase 3: Core Plant Management UI
 - [ ] Phase 4: AI Plant Identification
 - [ ] Phase 5: Guided Check-Ins
 - [ ] Phase 6: PWA Configuration
