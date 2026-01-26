@@ -4,10 +4,14 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { Plant } from '../types/database.types'
 
+interface PlantWithPhoto extends Plant {
+  photoUrl?: string
+}
+
 export default function Home() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const [plants, setPlants] = useState<Plant[]>([])
+  const [plants, setPlants] = useState<PlantWithPhoto[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -23,7 +27,33 @@ export default function Home() {
         .order('updated_at', { ascending: false })
 
       if (error) throw error
-      setPlants(data || [])
+
+      // Fetch latest photo for each plant
+      const plantsWithPhotos = await Promise.all(
+        (data || []).map(async (plant) => {
+          const { data: photos } = await supabase
+            .from('plant_photos')
+            .select('*')
+            .eq('plant_id', plant.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+
+          if (photos && photos.length > 0) {
+            const { data: urlData } = supabase.storage
+              .from('plant-photos')
+              .getPublicUrl(photos[0].storage_path)
+
+            return {
+              ...plant,
+              photoUrl: urlData.publicUrl,
+            }
+          }
+
+          return plant
+        })
+      )
+
+      setPlants(plantsWithPhotos)
     } catch (error) {
       console.error('Error fetching plants:', error)
     } finally {
@@ -88,8 +118,16 @@ export default function Home() {
                 onClick={() => navigate(`/plant/${plant.id}`)}
                 className="card cursor-pointer hover:shadow-lg transition-shadow"
               >
-                <div className="aspect-square bg-gray-100 flex items-center justify-center text-6xl">
-                  🌱
+                <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
+                  {plant.photoUrl ? (
+                    <img
+                      src={plant.photoUrl}
+                      alt={plant.custom_name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-6xl">🌱</div>
+                  )}
                 </div>
                 <div className="p-3">
                   <h3 className="font-bold text-text truncate">{plant.custom_name}</h3>
