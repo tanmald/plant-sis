@@ -131,25 +131,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const completeOnboarding = async (displayName: string, identityPreference: string, experienceLevel: string) => {
     if (!user) return
 
-    try {
-      // Upsert user profile with onboarding data
-      const { error } = await supabase
-        .from('user_profiles')
-        .upsert({
-          id: user.id,
-          display_name: displayName,
-          identity_preference: identityPreference,
-          experience_level: experienceLevel,
-          onboarded_at: new Date().toISOString(),
-        })
+    // Upsert user profile with onboarding data
+    const { error } = await supabase
+      .from('user_profiles')
+      .upsert({
+        id: user.id,
+        display_name: displayName,
+        identity_preference: identityPreference,
+        experience_level: experienceLevel,
+        onboarded_at: new Date().toISOString(),
+      })
 
-      if (error) throw error
+    if (error) throw error
 
-      setIsOnboarded(true)
-    } catch (error) {
-      // Re-throw error for calling code to handle
-      throw error
-    }
+    setIsOnboarded(true)
   }
 
   return (
