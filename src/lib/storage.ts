@@ -38,7 +38,6 @@ export async function uploadPlantPhoto({ file, userId, plantId }: UploadPhotoPar
       url: urlData.publicUrl,
     }
   } catch (error: any) {
-    console.error('Error uploading photo:', error)
     throw new Error(error.message || 'Failed to upload photo')
   }
 }
@@ -52,7 +51,6 @@ export async function deletePhoto(path: string) {
     if (error) throw error
     return true
   } catch (error: any) {
-    console.error('Error deleting photo:', error)
     throw new Error(error.message || 'Failed to delete photo')
   }
 }
@@ -92,7 +90,6 @@ export async function moveTempPhoto(tempPath: string, userId: string, plantId: s
       url: urlData.publicUrl,
     }
   } catch (error: any) {
-    console.error('Error moving photo:', error)
     throw new Error(error.message || 'Failed to move photo')
   }
 }

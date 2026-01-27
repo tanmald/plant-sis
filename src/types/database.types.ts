@@ -42,11 +42,17 @@ export interface PlantIdentification {
   created_at: string
 }
 
+export type IdentityPreference = 'female' | 'male' | 'prefer-not-to-say';
+
 export interface UserProfile {
   id: string
   subscription_tier: 'free' | 'pro'
   plants_count: number
   ai_ids_used_this_month: number
+  display_name?: string
+  experience_level?: string
+  identity_preference?: IdentityPreference
+  onboarded_at?: string
   created_at: string
   updated_at: string
 }

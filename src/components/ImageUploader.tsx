@@ -1,5 +1,6 @@
 import { useState, useRef, ChangeEvent } from 'react'
 import imageCompression from 'browser-image-compression'
+import { toast } from 'sonner'
 
 interface ImageUploaderProps {
   onImageSelect: (file: File) => void
@@ -38,8 +39,7 @@ export default function ImageUploader({ onImageSelect, currentImage, onRemove }:
       // Pass compressed file to parent
       onImageSelect(compressedFile)
     } catch (error) {
-      console.error('Error compressing image:', error)
-      alert('Error processing image. Please try again.')
+      toast.error('Error processing image. Please try again.')
     } finally {
       setIsCompressing(false)
     }

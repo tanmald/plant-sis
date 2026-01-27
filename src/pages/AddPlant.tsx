@@ -7,9 +7,10 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { supabase } from '../lib/supabase'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '../contexts/AuthContext'
 import { uploadPlantPhoto } from '../lib/storage'
 import ImageUploader from '../components/ImageUploader'
+import { toast } from 'sonner'
 
 const STEPS = [
   { id: 'photo', title: 'Photo', icon: Camera },
@@ -132,11 +133,12 @@ export default function AddPlant() {
         })
       }
 
-      // 3. Navigate to plant detail page
+      // 3. Show success and navigate to plant detail page
+      toast.success('Plant added! Welcome to the fam 🌿')
       navigate(`/plant/${plant.id}`)
     } catch (err: any) {
-      console.error('Error adding plant:', err)
       setError(err.message || 'Failed to add plant. Please try again.')
+      toast.error('Failed to add plant. Please try again.')
       setLoading(false)
     }
   }

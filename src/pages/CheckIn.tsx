@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 import { supabase } from '../lib/supabase'
 import { Plant } from '../types/database.types'
+import { toast } from 'sonner'
 
 const HEALTH_QUESTIONS = [
   {
@@ -89,7 +90,6 @@ export default function CheckIn() {
       if (error) throw error
       setPlant(data)
     } catch (err) {
-      console.error('Error fetching plant:', err)
       setError('Could not load plant details')
     } finally {
       setLoading(false)
@@ -178,11 +178,12 @@ export default function CheckIn() {
 
       if (saveError) throw saveError
 
+      toast.success('Check-in saved! 💚')
       setShowResults(true)
     } catch (err: any) {
-      console.error('Error saving check-in:', err)
       // Still show results even if save fails
       setError('Could not save check-in, but here are your recommendations!')
+      toast.error('Could not save check-in')
       setShowResults(true)
     } finally {
       setSaving(false)
