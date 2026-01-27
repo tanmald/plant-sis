@@ -2,11 +2,6 @@ import { Link, useLocation } from 'react-router-dom'
 import { Home, Plus, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const navItems = [
-  { title: 'Home', path: '/', icon: Home },
-  { title: 'Profile', path: '/profile', icon: User },
-]
-
 export function MobileBottomNav() {
   const location = useLocation()
   const HomeIcon = Home

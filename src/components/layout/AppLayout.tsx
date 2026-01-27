@@ -2,7 +2,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import { AppSidebar } from "./AppSidebar";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { Leaf } from "lucide-react";
 
 export function AppLayout() {
   const location = useLocation();
