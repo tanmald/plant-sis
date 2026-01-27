@@ -23,7 +23,7 @@ const healthConfig = {
   thriving: {
     label: "Thriving",
     icon: Heart,
-    color: "text-secondary",
+    color: "text-secondary-foreground",
     bgColor: "bg-secondary/10",
     borderColor: "border-secondary/20",
   },

@@ -166,55 +166,54 @@
   }
 
   .btn-secondary {
-    @apply bg-white text-forest-600 border-2 border-forest-500
+    @apply bg-card text-primary border-2 border-primary
            font-bold py-3.5 px-6 rounded-2xl shadow-soft
-           hover:bg-forest-50 hover:shadow-soft-lg
+           hover:bg-muted hover:shadow-soft-lg
            transition-all duration-300 touch-target
            active:scale-95 hover:scale-[1.02];
   }
 
   .btn-ghost {
-    @apply text-forest-600 font-semibold py-2 px-4 rounded-xl
-           hover:bg-forest-50 transition-all duration-200
+    @apply text-primary font-semibold py-2 px-4 rounded-xl
+           hover:bg-muted transition-all duration-200
            active:scale-95;
   }
 
   /* Glass Card System */
   .card-glass {
-    @apply bg-white/80 backdrop-blur-md rounded-3xl shadow-glass
-           border border-white/20 overflow-hidden;
+    @apply bg-card/80 backdrop-blur-md rounded-3xl shadow-glass
+           border border-border/20 overflow-hidden;
   }
 
   .card-solid {
-    @apply bg-white rounded-3xl shadow-soft overflow-hidden;
+    @apply bg-card rounded-3xl shadow-soft overflow-hidden;
   }
 
   .card-bento {
-    @apply bg-white rounded-2xl shadow-soft p-4
+    @apply bg-card rounded-2xl shadow-soft p-4
            hover:shadow-soft-lg transition-all duration-300
            active:scale-[0.98];
   }
 
   /* Legacy card for backwards compatibility */
   .card {
-    @apply bg-white rounded-xl shadow-md overflow-hidden;
+    @apply bg-card rounded-xl shadow-md overflow-hidden;
   }
 
   /* Modern Input System */
   .input-field {
-    @apply w-full px-4 py-3.5 bg-white border-2 border-charcoal-200
-           rounded-2xl font-medium
-           focus:outline-none focus:border-forest-500 focus:ring-4 focus:ring-forest-500/10
-           transition-all duration-200 touch-target
-           placeholder:text-charcoal-400;
+    @apply w-full px-4 py-3.5 bg-card border-2 border-input
+           rounded-2xl font-medium text-foreground placeholder-muted-foreground
+           focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10
+           transition-all duration-200 touch-target;
   }
 
   /* Icon Button */
   .icon-btn {
     @apply w-12 h-12 flex items-center justify-center rounded-2xl
-           bg-white shadow-soft hover:shadow-soft-lg
+           bg-card shadow-soft hover:shadow-soft-lg
            transition-all duration-200 active:scale-95
-           text-charcoal-700;
+           text-card-foreground;
   }
 
   /* Status Badge */
@@ -232,7 +231,7 @@
   }
 
   .status-badge.neutral {
-    @apply bg-charcoal-200 text-charcoal-700;
+    @apply bg-muted text-muted-foreground;
   }
 
   /* Floating Action Button */
@@ -267,15 +266,17 @@
   }
 
   .sassy-message.positive {
-    @apply bg-sage-500 bg-opacity-10 text-sage-700;
+    @apply bg-secondary/10 text-secondary
+           dark:bg-secondary/20 dark:text-secondary-foreground;
   }
 
   .sassy-message.neutral {
-    @apply bg-charcoal-100 text-charcoal-700;
+    @apply bg-muted text-muted-foreground;
   }
 
   .sassy-message.concern {
-    @apply bg-sunset-500 bg-opacity-10 text-sunset-700;
+    @apply bg-destructive/10 text-destructive
+           dark:bg-destructive/20 dark:text-destructive-foreground;
   }
 }
 

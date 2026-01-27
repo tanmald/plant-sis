@@ -66,7 +66,7 @@ export default function ImageUploader({ onImageSelect, currentImage, onRemove }:
           <button
             type="button"
             onClick={handleRemove}
-            className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-red-600"
+            className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-destructive/90"
           >
             ✕
           </button>
@@ -75,7 +75,7 @@ export default function ImageUploader({ onImageSelect, currentImage, onRemove }:
         // Upload Button
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+          className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
         >
           {isCompressing ? (
             <div>

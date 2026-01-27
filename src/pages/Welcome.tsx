@@ -5,12 +5,12 @@ export default function Welcome() {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-b from-cream via-cream to-sage-50">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-b from-background via-background to-card">
       {/* Plant Icon with animation */}
       <div className="text-8xl mb-8 animate-bounce-soft">🌿</div>
 
       {/* App Name */}
-      <h1 className="text-5xl md:text-6xl font-black text-forest-600 mb-3 text-center">PlantSis</h1>
+      <h1 className="text-5xl md:text-6xl font-black text-foreground mb-3 text-center">PlantSis</h1>
       <p className="text-xl text-charcoal-600 mb-16 text-center max-w-md">
         Your plant bestie with zero judgment and all the vibes
       </p>
@@ -22,7 +22,7 @@ export default function Welcome() {
             <Camera className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <p className="font-bold text-forest-900 text-lg">Snap & identify your plant babies</p>
+            <p className="font-bold text-foreground text-lg">Snap & identify your plant babies</p>
             <p className="text-sm text-charcoal-600 mt-1">Take a photo, I'll tell you what it is</p>
           </div>
         </div>
@@ -32,7 +32,7 @@ export default function Welcome() {
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <p className="font-bold text-forest-900 text-lg">Get the tea on what they need</p>
+            <p className="font-bold text-foreground text-lg">Get the tea on what they need</p>
             <p className="text-sm text-charcoal-600 mt-1">Quick check-ins, expert guidance</p>
           </div>
         </div>
@@ -42,7 +42,7 @@ export default function Welcome() {
             <Heart className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <p className="font-bold text-forest-900 text-lg">Zero judgment, pure support</p>
+            <p className="font-bold text-foreground text-lg">Zero judgment, pure support</p>
             <p className="text-sm text-charcoal-600 mt-1">We all forget to water sometimes</p>
           </div>
         </div>

@@ -192,7 +192,7 @@ export default function CheckIn() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-cream to-sage-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-card">
         <div className="text-center animate-pulse">
           <div className="text-6xl mb-4">🌿</div>
           <div className="text-lg text-charcoal-600">Loading check-in...</div>
@@ -203,10 +203,10 @@ export default function CheckIn() {
 
   if (error && !showResults) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-cream to-sage-50 px-6">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-card px-6">
         <div className="text-center">
           <div className="text-6xl mb-4">😕</div>
-          <h2 className="text-2xl font-black text-forest-900 mb-2">Oops!</h2>
+          <h2 className="text-2xl font-black text-foreground mb-2">Oops!</h2>
           <p className="text-charcoal-600 mb-6">{error}</p>
           <Button onClick={() => navigate('/home')}>Go Home</Button>
         </div>
@@ -219,26 +219,26 @@ export default function CheckIn() {
     const recommendations = getRecommendations()
 
     return (
-      <div className="min-h-screen bg-gradient-to-b from-cream to-sage-50 pb-24">
+      <div className="min-h-screen bg-gradient-to-b from-background to-card pb-24">
         <div className="max-w-2xl mx-auto px-6 py-8 space-y-8 animate-fade-slide-up">
           <div className="text-center space-y-4">
             <div className="text-6xl animate-bounce-gentle">{health.emoji}</div>
-            <h1 className="font-display text-3xl text-forest-900">{health.message}</h1>
-            <p className="font-handwritten text-xl text-secondary">
+            <h1 className="font-display text-3xl text-foreground">{health.message}</h1>
+            <p className="font-handwritten text-xl text-secondary-foreground">
               Check-in complete! Here's the tea on {plant?.custom_name} ☕
             </p>
           </div>
 
-          <Card className="border-0 shadow-warm bg-gradient-to-br from-sage-50 to-forest-50">
+          <Card className="border-0 shadow-warm bg-gradient-to-br from-card to-muted">
             <CardHeader>
-              <CardTitle className="font-display text-xl flex items-center gap-2 text-forest-900">
+              <CardTitle className="font-display text-xl flex items-center gap-2 text-card-foreground">
                 <Sparkles className="w-5 h-5 text-sunset-500" />
                 Care Recommendations
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {recommendations.map((rec, index) => (
-                <div key={index} className="p-4 bg-white rounded-xl shadow-soft">
+                <div key={index} className="p-4 bg-card rounded-xl shadow-soft">
                   <p>{rec}</p>
                 </div>
               ))}
@@ -248,7 +248,7 @@ export default function CheckIn() {
           {notes && (
             <Card className="border-0 shadow-soft">
               <CardHeader>
-                <CardTitle className="font-display text-lg text-forest-900">Your Notes</CardTitle>
+                <CardTitle className="font-display text-lg text-card-foreground">Your Notes</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-charcoal-600">{notes}</p>
@@ -284,14 +284,14 @@ export default function CheckIn() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cream to-sage-50 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-background to-card pb-24">
       <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
         {/* Header */}
         <div className="space-y-4">
           <Button
             variant="ghost"
             onClick={() => navigate(`/plant/${plantId}`)}
-            className="gap-2 text-forest-600"
+            className="gap-2 text-primary"
           >
             <ArrowLeft className="w-4 h-4" />
             Cancel
@@ -300,7 +300,7 @@ export default function CheckIn() {
           {plant && (
             <div className="text-center mb-4">
               <p className="text-sm text-charcoal-500">Checking in on</p>
-              <h2 className="font-display text-xl text-forest-900">{plant.custom_name}</h2>
+              <h2 className="font-display text-xl text-foreground">{plant.custom_name}</h2>
             </div>
           )}
 
@@ -321,8 +321,8 @@ export default function CheckIn() {
                 <div className="w-16 h-16 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center">
                   {currentQuestion && <currentQuestion.icon className="w-8 h-8 text-primary" />}
                 </div>
-                <CardTitle className="font-display text-2xl text-forest-900">{currentQuestion?.question}</CardTitle>
-                <CardDescription className="font-handwritten text-lg text-secondary">
+                <CardTitle className="font-display text-2xl text-card-foreground">{currentQuestion?.question}</CardTitle>
+                <CardDescription className="font-handwritten text-lg text-secondary-foreground">
                   Be honest - no judgment here! 💅
                 </CardDescription>
               </CardHeader>
@@ -349,8 +349,8 @@ export default function CheckIn() {
                 <div className="w-16 h-16 rounded-full bg-secondary/20 mx-auto mb-4 flex items-center justify-center text-3xl">
                   📝
                 </div>
-                <CardTitle className="font-display text-2xl text-forest-900">Any extra notes?</CardTitle>
-                <CardDescription className="font-handwritten text-lg text-secondary">
+                <CardTitle className="font-display text-2xl text-card-foreground">Any extra notes?</CardTitle>
+                <CardDescription className="font-handwritten text-lg text-secondary-foreground">
                   Spill the tea about your plant! ☕
                 </CardDescription>
               </CardHeader>

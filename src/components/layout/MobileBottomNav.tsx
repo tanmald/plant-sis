@@ -30,7 +30,7 @@ export function MobileBottomNav() {
           aria-label="Navigate to Home"
           aria-current={location.pathname === '/' ? 'page' : undefined}
         >
-          <HomeIcon className="w-5 h-5" />
+          <HomeIcon className="w-6 h-6" />
           <span>Home</span>
         </Link>
 
@@ -59,7 +59,7 @@ export function MobileBottomNav() {
           aria-label="Navigate to Profile"
           aria-current={location.pathname === '/profile' ? 'page' : undefined}
         >
-          <ProfileIcon className="w-5 h-5" />
+          <ProfileIcon className="w-6 h-6" />
           <span>Profile</span>
         </Link>
       </div>

@@ -71,7 +71,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-cream to-sage-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-card">
         <div className="text-center animate-pulse">
           <div className="text-6xl mb-4">🌿</div>
           <div className="text-lg text-charcoal-600">Loading your green fam...</div>
@@ -86,19 +86,19 @@ export default function Home() {
     : `You've got ${plantCount} green babies`
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cream to-sage-50 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-background to-card pb-24">
       {/* Glass Header */}
       <div className="bg-white/80 backdrop-blur-md shadow-soft px-6 py-5 sticky top-0 z-10 border-b border-white/20">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black text-forest-700">{getGreeting()}</h1>
+            <h1 className="text-2xl font-black text-foreground">{getGreeting()}</h1>
             {plants.length > 0 && (
               <p className="text-sm text-charcoal-600 mt-1">{plantCountText}</p>
             )}
           </div>
           <button
             onClick={() => navigate('/add-plant')}
-            className="w-12 h-12 rounded-full bg-gradient-to-br from-forest-500 to-forest-600 text-white flex items-center justify-center shadow-soft hover:shadow-soft-lg transition-all active:scale-95"
+            className="w-12 h-12 rounded-full bg-gradient-to-br from-forest-500 to-forest-600 text-white dark:text-white flex items-center justify-center shadow-soft hover:shadow-soft-lg transition-all active:scale-95"
           >
             <Plus className="w-6 h-6" />
           </button>
@@ -111,7 +111,7 @@ export default function Home() {
           // Empty State
           <div className="text-center py-16 animate-slide-up">
             <div className="text-8xl mb-6">🪴</div>
-            <h2 className="text-3xl font-black text-forest-700 mb-3">Time to start your plant fam</h2>
+            <h2 className="text-3xl font-black text-foreground mb-3">Time to start your plant fam</h2>
             <p className="text-lg text-charcoal-600 mb-8 max-w-sm mx-auto">
               Snap a photo and I'll help you keep your green friends thriving
             </p>
@@ -147,7 +147,7 @@ export default function Home() {
                   )}
                 </div>
                 <div className="p-4">
-                  <h3 className="font-bold text-forest-900 text-lg truncate">{plant.custom_name}</h3>
+                  <h3 className="font-bold text-foreground text-lg truncate">{plant.custom_name}</h3>
                   {plant.species_name && (
                     <p className="text-sm text-charcoal-600 truncate italic">{plant.species_name}</p>
                   )}
@@ -172,7 +172,7 @@ export default function Home() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-forest-500 to-forest-600 flex items-center justify-center">
                 <HomeIcon className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xs font-semibold text-forest-600">Home</span>
+              <span className="text-xs font-semibold text-primary">Home</span>
             </button>
 
             <button

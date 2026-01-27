@@ -149,7 +149,7 @@ export default function AddPlant() {
         return (
           <div className="space-y-6 animate-fade-slide-up">
             <div className="text-center space-y-2">
-              <h2 className="font-display text-2xl text-forest-900">Let's see your new plant baby! 📸</h2>
+              <h2 className="font-display text-2xl text-foreground">Let's see your new plant baby! 📸</h2>
               <p className="text-charcoal-600">Add a photo to help identify your plant</p>
             </div>
 
@@ -177,7 +177,7 @@ export default function AddPlant() {
         return (
           <div className="space-y-6 animate-fade-slide-up">
             <div className="text-center space-y-2">
-              <h2 className="font-display text-2xl text-forest-900">Name your plant baby! 💚</h2>
+              <h2 className="font-display text-2xl text-foreground">Name your plant baby! 💚</h2>
               <p className="text-charcoal-600">Give them a name that sparks joy</p>
             </div>
 
@@ -216,7 +216,7 @@ export default function AddPlant() {
         return (
           <div className="space-y-8 animate-fade-slide-up">
             <div className="text-center space-y-2">
-              <h2 className="font-display text-2xl text-forest-900">Where does your plant live? 🏠</h2>
+              <h2 className="font-display text-2xl text-foreground">Where does your plant live? 🏠</h2>
               <p className="text-charcoal-600">This helps us give better care tips!</p>
             </div>
 
@@ -269,7 +269,7 @@ export default function AddPlant() {
                             ? 'bg-gradient-to-br from-forest-500 to-sage-600'
                             : 'bg-charcoal-100'
                         }`}>
-                          <Icon className={`w-6 h-6 ${formData.light_type === light.id ? 'text-white' : 'text-charcoal-500'}`} />
+                          <Icon className={`w-6 h-6 ${formData.light_type === light.id ? 'text-white dark:text-white' : 'text-muted-foreground'}`} />
                         </div>
                         <div>
                           <p className="font-medium">{light.emoji} {light.label}</p>
@@ -312,16 +312,16 @@ export default function AddPlant() {
         return (
           <div className="space-y-6 animate-fade-slide-up">
             <div className="text-center space-y-2">
-              <h2 className="font-display text-2xl text-forest-900">Welcome to the plant fam! 🌿✨</h2>
+              <h2 className="font-display text-2xl text-foreground">Welcome to the plant fam! 🌿✨</h2>
               <p className="text-charcoal-600">Let's review your new plant baby</p>
             </div>
 
-            <Card className="bg-gradient-to-br from-sage-50 to-forest-50 border-0 shadow-warm">
+            <Card className="bg-gradient-to-br from-card to-muted border-0 shadow-warm">
               <CardHeader className="text-center">
                 <div className="w-20 h-20 rounded-full bg-forest-100 mx-auto mb-4 flex items-center justify-center text-4xl animate-bounce-gentle">
                   🌱
                 </div>
-                <CardTitle className="font-display text-2xl text-forest-900">
+                <CardTitle className="font-display text-2xl text-card-foreground">
                   {formData.custom_name || 'Unnamed Plant'}
                 </CardTitle>
                 {formData.species_name && (
@@ -364,7 +364,7 @@ export default function AddPlant() {
               </div>
             )}
 
-            <p className="text-center font-handwritten text-xl text-secondary">
+            <p className="text-center font-handwritten text-xl text-secondary-foreground">
               Slay! Your plant is ready to join the fam 💅
             </p>
           </div>
@@ -376,14 +376,14 @@ export default function AddPlant() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cream to-sage-50 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-background to-card pb-24">
       <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
         {/* Header with Progress */}
         <div className="space-y-4">
           <Button
             variant="ghost"
             onClick={() => currentStep === 0 ? navigate('/home') : handleBack()}
-            className="gap-2 text-forest-600"
+            className="gap-2 text-primary"
           >
             <ArrowLeft className="w-4 h-4" />
             {currentStep === 0 ? 'Cancel' : 'Back'}
