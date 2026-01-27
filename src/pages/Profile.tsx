@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { User, Crown, Sparkles, Leaf, TrendingUp, LogOut, Bell, Shield, FileText, Edit2 } from 'lucide-react'
+import { User, Crown, Sparkles, Leaf, Camera, TrendingUp, LogOut, Settings, Edit2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
@@ -126,7 +128,7 @@ export default function Profile() {
         </Card>
         <Card className="border-0 shadow-sm text-center">
           <CardContent className="pt-6">
-            <Sparkles className="w-8 h-8 mx-auto text-honey mb-2" />
+            <Camera className="w-8 h-8 mx-auto text-honey mb-2" />
             <p className="text-3xl font-bold font-display">{daysSinceJoined}</p>
             <p className="text-xs text-muted-foreground">Days</p>
           </CardContent>
@@ -135,47 +137,47 @@ export default function Profile() {
 
       {/* AI Usage Card */}
       {profile?.subscription_tier === 'free' && (
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-honey/10 to-accent/10">
-          <CardContent className="p-6 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-honey" />
-                <span className="font-semibold">AI Identifications</span>
-              </div>
-              <span className="text-sm text-muted-foreground">
-                {aiUsed}/{aiLimit} used
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle className="font-display text-xl flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-honey" />
+              AI Identifications
+            </CardTitle>
+            <CardDescription>
+              {aiUsed} of {aiLimit} used this month
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Progress value={(aiUsed / aiLimit) * 100} className="h-3" />
+
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">
+                {aiLimit - aiUsed} remaining
               </span>
+              <Button variant="link" className="p-0 h-auto text-primary">
+                Upgrade for more →
+              </Button>
             </div>
-            <div className="w-full bg-muted rounded-full h-2">
-              <div
-                className="bg-honey h-2 rounded-full transition-all"
-                style={{ width: `${(aiUsed / aiLimit) * 100}%` }}
-              />
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Upgrade to Pro for unlimited AI identifications! ✨
-            </p>
           </CardContent>
         </Card>
       )}
 
       {/* Upgrade CTA */}
       {profile?.subscription_tier === 'free' && (
-        <div className="card-solid overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-glow-purple via-glow-pink to-glow-blue opacity-90" />
-          <div className="relative p-6 text-white">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-6 h-6" />
-              <h2 className="font-black text-2xl">Level Up Your Plant Game</h2>
-            </div>
-            <p className="mb-5 opacity-95 font-medium">
-              Get unlimited plants, AI-powered recommendations, and exclusive features
-            </p>
-            <button className="w-full bg-white text-glow-purple font-black py-3 px-6 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all active:scale-95">
-              Upgrade to Pro ✨
-            </button>
-          </div>
-        </div>
+        <Card className="border-0 shadow-warm gradient-warm">
+          <CardHeader>
+            <CardTitle className="font-display text-xl">Level up your plant game! 🌟</CardTitle>
+            <CardDescription>
+              Get unlimited AI identifications and premium features
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button className="w-full h-12 rounded-xl shadow-warm">
+              <Crown className="w-4 h-4 mr-2" />
+              Upgrade to Pro
+            </Button>
+          </CardContent>
+        </Card>
       )}
 
       {/* Identity Preference Card */}
@@ -248,50 +250,46 @@ export default function Profile() {
         </CardContent>
       </Card>
 
-      {/* Settings */}
+      {/* Stats Highlight Card */}
+      <Card className="border-0 shadow-sm gradient-sage">
+        <CardContent className="pt-6">
+          <div className="text-center space-y-2">
+            <p className="font-handwritten text-2xl text-secondary">
+              You've been a plant parent for
+            </p>
+            <p className="font-display text-4xl font-bold">{daysSinceJoined} days</p>
+            <p className="text-muted-foreground">
+              {daysSinceJoined > 30 ? "That's dedication! 💪" : "Just getting started! 🌱"}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Separator />
+
+      {/* Settings Actions */}
       <div className="space-y-3">
-        <h2 className="font-display text-xl font-semibold">Settings</h2>
-
-        <button className="w-full card-bento flex items-center gap-4 text-left hover:shadow-warm transition-shadow">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <Bell className="w-5 h-5 text-primary" />
-          </div>
-          <div className="flex-1">
-            <div className="font-semibold">Notifications</div>
-            <div className="text-sm text-muted-foreground">Manage your alerts</div>
-          </div>
-        </button>
-
-        <button className="w-full card-bento flex items-center gap-4 text-left hover:shadow-warm transition-shadow">
-          <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
-            <Shield className="w-5 h-5 text-secondary" />
-          </div>
-          <div className="flex-1">
-            <div className="font-semibold">Privacy Policy</div>
-            <div className="text-sm text-muted-foreground">How we protect your data</div>
-          </div>
-        </button>
-
-        <button className="w-full card-bento flex items-center gap-4 text-left hover:shadow-warm transition-shadow">
-          <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
-            <FileText className="w-5 h-5 text-accent" />
-          </div>
-          <div className="flex-1">
-            <div className="font-semibold">Terms of Service</div>
-            <div className="text-sm text-muted-foreground">Legal stuff</div>
-          </div>
-        </button>
+        <Button
+          variant="outline"
+          className="w-full justify-start h-12 rounded-xl"
+          onClick={() => navigate('/settings')}
+        >
+          <Settings className="w-5 h-5 mr-3" />
+          App Settings
+        </Button>
+        <Button
+          onClick={handleSignOut}
+          variant="outline"
+          className="w-full justify-start h-12 rounded-xl text-destructive hover:text-destructive"
+        >
+          <LogOut className="w-5 h-5 mr-3" />
+          Sign Out
+        </Button>
       </div>
-
-      {/* Sign Out */}
-      <Button onClick={handleSignOut} variant="outline" className="w-full gap-2">
-        <LogOut className="w-4 h-4" />
-        Sign Out
-      </Button>
 
       {/* Version */}
       <p className="text-center text-sm text-muted-foreground">
-        PlantSis v1.0.0 • Made with 💚
+        Made with 💚 for plant lovers everywhere
       </p>
     </div>
   )

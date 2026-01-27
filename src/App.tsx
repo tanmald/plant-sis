@@ -16,6 +16,7 @@ import AddPlant from './pages/AddPlant'
 import PlantDetail from './pages/PlantDetail'
 import CheckIn from './pages/CheckIn'
 import Profile from './pages/Profile'
+import Settings from './pages/Settings'
 
 // Create react-query client
 const queryClient = new QueryClient({
@@ -48,6 +49,7 @@ function App() {
             <Route path="/plant/:id" element={<PlantDetail />} />
             <Route path="/check-in/:plantId" element={<CheckIn />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
 
           {/* Default redirect */}

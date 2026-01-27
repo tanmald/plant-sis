@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Leaf, Search, Droplets, Sun, AlertTriangle } from "lucide-react";
+import { Plus, Leaf, Search, Droplets, TrendingUp, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,13 +7,35 @@ import { PlantCard } from "@/components/plants/PlantCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { usePlants } from "@/hooks/usePlants";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 import { getPlantTitle } from "@/lib/utils";
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
+  const { user } = useAuth();
   const { data: plants = [], isLoading, error, refetch } = usePlants();
   const { profile } = useUserProfile();
   const plantTitle = getPlantTitle(profile?.identity_preference);
+
+  // Fetch check-ins count this month
+  const { data: checkInsCount = 0 } = useQuery({
+    queryKey: ['check-ins-count', user?.id],
+    queryFn: async () => {
+      if (!user) return 0;
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const { count } = await supabase
+        .from('check_ins')
+        .select('*', { count: 'exact', head: true })
+        .gte('check_in_date', startOfMonth.toISOString());
+      return count || 0;
+    },
+    enabled: !!user,
+  });
 
   const filteredPlants = plants.filter(
     (plant) =>
@@ -92,11 +114,11 @@ export default function Dashboard() {
         <div className="bg-card rounded-2xl p-4 border border-border shadow-sm">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-honey/20 flex items-center justify-center">
-              <Sun className="w-5 h-5 text-honey" />
+              <TrendingUp className="w-5 h-5 text-honey" />
             </div>
             <div>
-              <p className="text-2xl font-bold font-display">7</p>
-              <p className="text-xs text-muted-foreground">Day Streak 🔥</p>
+              <p className="text-2xl font-bold font-display">{checkInsCount}</p>
+              <p className="text-xs text-muted-foreground">This Month</p>
             </div>
           </div>
         </div>
