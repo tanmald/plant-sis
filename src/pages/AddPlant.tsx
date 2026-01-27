@@ -1,43 +1,100 @@
-import { useState, FormEvent } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Sun, Cloud, CloudOff, Camera } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Sparkles, MapPin, Sun, Ruler, Check, Cloud, CloudOff } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { uploadPlantPhoto } from '../lib/storage'
 import ImageUploader from '../components/ImageUploader'
 
+const STEPS = [
+  { id: 'photo', title: 'Photo', icon: Camera },
+  { id: 'details', title: 'Details', icon: MapPin },
+  { id: 'environment', title: 'Environment', icon: Sun },
+  { id: 'confirm', title: 'Confirm', icon: Check },
+]
+
+const LOCATIONS = [
+  { id: 'Living Room', label: 'Living Room', emoji: '🛋️' },
+  { id: 'Bedroom', label: 'Bedroom', emoji: '🛏️' },
+  { id: 'Bathroom', label: 'Bathroom', emoji: '🚿' },
+  { id: 'Kitchen', label: 'Kitchen', emoji: '🍳' },
+  { id: 'Office', label: 'Office', emoji: '💼' },
+  { id: 'Balcony', label: 'Balcony', emoji: '🌅' },
+]
+
+const LIGHT_TYPES = [
+  { id: 'direct', label: 'Bright Direct', emoji: '☀️', description: 'Direct sunlight for 4+ hours', icon: Sun },
+  { id: 'indirect', label: 'Bright Indirect', emoji: '🌤️', description: 'Near window, no direct sun', icon: Cloud },
+  { id: 'low', label: 'Low Light', emoji: '🌙', description: 'Away from windows, shade', icon: CloudOff },
+]
+
+const PROXIMITY_OPTIONS = [
+  { id: 'on_sill', label: 'On Windowsill', emoji: '🪟' },
+  { id: 'near', label: 'Near Window', emoji: '📏' },
+  { id: 'far', label: 'Far from Window', emoji: '🏠' },
+]
+
 export default function AddPlant() {
   const navigate = useNavigate()
   const { user } = useAuth()
-
-  // Form state
-  const [customName, setCustomName] = useState('')
-  const [speciesName, setSpeciesName] = useState('')
-  const [location, setLocation] = useState('')
-  const [lightType, setLightType] = useState<'direct' | 'indirect' | 'low'>('indirect')
-  const [proximity, setProximity] = useState<'on_sill' | 'near' | 'far'>('near')
-  const [photoFile, setPhotoFile] = useState<File | null>(null)
-
-  // UI state
+  const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
+  const [formData, setFormData] = useState({
+    custom_name: '',
+    species_name: '',
+    location: '',
+    light_type: '' as 'direct' | 'indirect' | 'low' | '',
+    proximity_to_window: '' as 'on_sill' | 'near' | 'far' | '',
+    photo: null as File | null,
+  })
+
+  const progress = ((currentStep + 1) / STEPS.length) * 100
+
+  const updateFormData = (field: string, value: string | File | null) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const canProceed = () => {
+    switch (currentStep) {
+      case 0: // Photo - optional, always can proceed
+        return true
+      case 1: // Details - need name
+        return formData.custom_name.trim().length > 0
+      case 2: // Environment - need location, light, proximity
+        return formData.location && formData.light_type && formData.proximity_to_window
+      case 3: // Confirm
+        return true
+      default:
+        return true
+    }
+  }
+
+  const handleNext = () => {
+    if (currentStep < STEPS.length - 1) {
+      setCurrentStep(currentStep + 1)
+    } else {
+      handleSubmit()
+    }
+  }
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const handleSubmit = async () => {
     setError('')
 
     if (!user) {
       setError('You must be logged in to add a plant')
-      return
-    }
-
-    if (!customName.trim()) {
-      setError('Please give your plant a name')
-      return
-    }
-
-    if (!location.trim()) {
-      setError('Please tell us where your plant lives')
       return
     }
 
@@ -49,11 +106,11 @@ export default function AddPlant() {
         .from('plants')
         .insert({
           user_id: user.id,
-          custom_name: customName.trim(),
-          species_name: speciesName.trim() || null,
-          location: location.trim(),
-          light_type: lightType,
-          proximity_to_window: proximity,
+          custom_name: formData.custom_name.trim(),
+          species_name: formData.species_name.trim() || null,
+          location: formData.location,
+          light_type: formData.light_type,
+          proximity_to_window: formData.proximity_to_window,
         })
         .select()
         .single()
@@ -61,9 +118,9 @@ export default function AddPlant() {
       if (plantError) throw plantError
 
       // 2. Upload photo if provided
-      if (photoFile && plant) {
+      if (formData.photo && plant) {
         const { path } = await uploadPlantPhoto({
-          file: photoFile,
+          file: formData.photo,
           userId: user.id,
           plantId: plant.id,
         })
@@ -80,218 +137,329 @@ export default function AddPlant() {
     } catch (err: any) {
       console.error('Error adding plant:', err)
       setError(err.message || 'Failed to add plant. Please try again.')
-    } finally {
       setLoading(false)
+    }
+  }
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 0:
+        return (
+          <div className="space-y-6 animate-fade-slide-up">
+            <div className="text-center space-y-2">
+              <h2 className="font-display text-2xl text-forest-900">Let's see your new plant baby! 📸</h2>
+              <p className="text-charcoal-600">Add a photo to help identify your plant</p>
+            </div>
+
+            <div className="max-w-sm mx-auto">
+              <ImageUploader
+                onImageSelect={(file) => updateFormData('photo', file)}
+                onRemove={() => updateFormData('photo', null)}
+              />
+            </div>
+
+            <div className="flex gap-4 justify-center">
+              <Button variant="outline" className="rounded-xl" disabled>
+                <Sparkles className="w-4 h-4 mr-2" />
+                AI Identify (Coming Soon)
+              </Button>
+            </div>
+
+            <p className="text-center text-sm text-charcoal-500">
+              No pic? No problem — you can skip this step
+            </p>
+          </div>
+        )
+
+      case 1:
+        return (
+          <div className="space-y-6 animate-fade-slide-up">
+            <div className="text-center space-y-2">
+              <h2 className="font-display text-2xl text-forest-900">Name your plant baby! 💚</h2>
+              <p className="text-charcoal-600">Give them a name that sparks joy</p>
+            </div>
+
+            <div className="space-y-4 max-w-sm mx-auto">
+              <div className="space-y-2">
+                <Label htmlFor="custom_name">Nickname *</Label>
+                <Input
+                  id="custom_name"
+                  placeholder="e.g., Monty, Fern Gully, Sir Leafs-a-Lot"
+                  value={formData.custom_name}
+                  onChange={(e) => updateFormData('custom_name', e.target.value)}
+                  className="h-12 rounded-xl text-center text-lg"
+                  maxLength={50}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="species">Species (optional)</Label>
+                <Input
+                  id="species"
+                  placeholder="e.g., Monstera deliciosa"
+                  value={formData.species_name}
+                  onChange={(e) => updateFormData('species_name', e.target.value)}
+                  className="h-12 rounded-xl"
+                  maxLength={100}
+                />
+                <p className="text-xs text-charcoal-500 text-center">
+                  Not sure? Use AI Identify! ✨ (Coming soon)
+                </p>
+              </div>
+            </div>
+          </div>
+        )
+
+      case 2:
+        return (
+          <div className="space-y-8 animate-fade-slide-up">
+            <div className="text-center space-y-2">
+              <h2 className="font-display text-2xl text-forest-900">Where does your plant live? 🏠</h2>
+              <p className="text-charcoal-600">This helps us give better care tips!</p>
+            </div>
+
+            <div className="space-y-6">
+              {/* Location */}
+              <div className="space-y-3">
+                <Label className="text-base flex items-center gap-2">
+                  <MapPin className="w-4 h-4" /> Location *
+                </Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {LOCATIONS.map((loc) => (
+                    <button
+                      key={loc.id}
+                      type="button"
+                      onClick={() => updateFormData('location', loc.id)}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        formData.location === loc.id
+                          ? 'border-primary bg-primary/10 shadow-warm'
+                          : 'border-charcoal-200 hover:border-primary/50'
+                      }`}
+                    >
+                      <span className="text-2xl block mb-1">{loc.emoji}</span>
+                      <span className="text-sm">{loc.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Light Type */}
+              <div className="space-y-3">
+                <Label className="text-base flex items-center gap-2">
+                  <Sun className="w-4 h-4" /> Light Level *
+                </Label>
+                <div className="space-y-2">
+                  {LIGHT_TYPES.map((light) => {
+                    const Icon = light.icon
+                    return (
+                      <button
+                        key={light.id}
+                        type="button"
+                        onClick={() => updateFormData('light_type', light.id)}
+                        className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center gap-4 ${
+                          formData.light_type === light.id
+                            ? 'border-primary bg-primary/10 shadow-warm'
+                            : 'border-charcoal-200 hover:border-primary/50'
+                        }`}
+                      >
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                          formData.light_type === light.id
+                            ? 'bg-gradient-to-br from-forest-500 to-sage-600'
+                            : 'bg-charcoal-100'
+                        }`}>
+                          <Icon className={`w-6 h-6 ${formData.light_type === light.id ? 'text-white' : 'text-charcoal-500'}`} />
+                        </div>
+                        <div>
+                          <p className="font-medium">{light.emoji} {light.label}</p>
+                          <p className="text-sm text-charcoal-600">{light.description}</p>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Proximity */}
+              <div className="space-y-3">
+                <Label className="text-base flex items-center gap-2">
+                  <Ruler className="w-4 h-4" /> Distance from Window *
+                </Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {PROXIMITY_OPTIONS.map((prox) => (
+                    <button
+                      key={prox.id}
+                      type="button"
+                      onClick={() => updateFormData('proximity_to_window', prox.id)}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        formData.proximity_to_window === prox.id
+                          ? 'border-primary bg-primary/10 shadow-warm'
+                          : 'border-charcoal-200 hover:border-primary/50'
+                      }`}
+                    >
+                      <span className="text-2xl block mb-1">{prox.emoji}</span>
+                      <span className="text-sm">{prox.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+
+      case 3:
+        return (
+          <div className="space-y-6 animate-fade-slide-up">
+            <div className="text-center space-y-2">
+              <h2 className="font-display text-2xl text-forest-900">Welcome to the plant fam! 🌿✨</h2>
+              <p className="text-charcoal-600">Let's review your new plant baby</p>
+            </div>
+
+            <Card className="bg-gradient-to-br from-sage-50 to-forest-50 border-0 shadow-warm">
+              <CardHeader className="text-center">
+                <div className="w-20 h-20 rounded-full bg-forest-100 mx-auto mb-4 flex items-center justify-center text-4xl animate-bounce-gentle">
+                  🌱
+                </div>
+                <CardTitle className="font-display text-2xl text-forest-900">
+                  {formData.custom_name || 'Unnamed Plant'}
+                </CardTitle>
+                {formData.species_name && (
+                  <CardDescription className="italic text-charcoal-600">{formData.species_name}</CardDescription>
+                )}
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="p-3 bg-white rounded-xl shadow-soft">
+                    <p className="text-xl mb-1">
+                      {LOCATIONS.find((l) => l.id === formData.location)?.emoji || '🏠'}
+                    </p>
+                    <p className="text-xs text-charcoal-600">
+                      {formData.location || 'Location'}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-soft">
+                    <p className="text-xl mb-1">
+                      {LIGHT_TYPES.find((l) => l.id === formData.light_type)?.emoji || '☀️'}
+                    </p>
+                    <p className="text-xs text-charcoal-600">
+                      {LIGHT_TYPES.find((l) => l.id === formData.light_type)?.label || 'Light'}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-soft">
+                    <p className="text-xl mb-1">
+                      {PROXIMITY_OPTIONS.find((p) => p.id === formData.proximity_to_window)?.emoji || '🪟'}
+                    </p>
+                    <p className="text-xs text-charcoal-600">
+                      {PROXIMITY_OPTIONS.find((p) => p.id === formData.proximity_to_window)?.label || 'Window'}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {error && (
+              <div className="p-4 bg-destructive/10 border border-destructive rounded-xl text-destructive text-center">
+                {error}
+              </div>
+            )}
+
+            <p className="text-center font-handwritten text-xl text-secondary">
+              Slay! Your plant is ready to join the fam 💅
+            </p>
+          </div>
+        )
+
+      default:
+        return null
     }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream to-sage-50 pb-24">
-      {/* Glass Header */}
-      <div className="bg-white/80 backdrop-blur-md shadow-soft px-6 py-5 sticky top-0 z-10 border-b border-white/20">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate('/home')}
-            className="icon-btn"
+      <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
+        {/* Header with Progress */}
+        <div className="space-y-4">
+          <Button
+            variant="ghost"
+            onClick={() => currentStep === 0 ? navigate('/home') : handleBack()}
+            className="gap-2 text-forest-600"
           >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="text-2xl font-black text-forest-700">Tell Me About Your New Plant Baby</h1>
+            <ArrowLeft className="w-4 h-4" />
+            {currentStep === 0 ? 'Cancel' : 'Back'}
+          </Button>
+
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-charcoal-600">
+              <span>Step {currentStep + 1} of {STEPS.length}</span>
+              <span>{STEPS[currentStep].title}</span>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </div>
+
+          {/* Step indicators */}
+          <div className="flex justify-between">
+            {STEPS.map((step, index) => {
+              const Icon = step.icon
+              return (
+                <div
+                  key={step.id}
+                  className={`flex flex-col items-center gap-1 ${
+                    index <= currentStep ? 'text-primary' : 'text-charcoal-400'
+                  }`}
+                >
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                      index < currentStep
+                        ? 'bg-primary text-primary-foreground'
+                        : index === currentStep
+                        ? 'bg-primary/20 border-2 border-primary'
+                        : 'bg-charcoal-100'
+                    }`}
+                  >
+                    {index < currentStep ? (
+                      <Check className="w-5 h-5" />
+                    ) : (
+                      <Icon className="w-5 h-5" />
+                    )}
+                  </div>
+                  <span className="text-xs hidden sm:block">{step.title}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Step Content */}
+        <div>{renderStepContent()}</div>
+
+        {/* Navigation Buttons */}
+        <div className="flex gap-4 pt-4">
+          {currentStep > 0 && (
+            <Button variant="outline" onClick={handleBack} className="flex-1 h-12 rounded-xl">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+          )}
+          <Button
+            onClick={handleNext}
+            disabled={!canProceed() || loading}
+            className="flex-1 h-12 rounded-xl shadow-warm"
+          >
+            {loading ? (
+              'Adding your plant...'
+            ) : currentStep === STEPS.length - 1 ? (
+              <>
+                <Sparkles className="w-4 h-4 mr-2" />
+                Add Plant
+              </>
+            ) : (
+              <>
+                Next
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
         </div>
       </div>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="px-6 py-8 space-y-6">
-        {/* Error Message */}
-        {error && (
-          <div className="p-4 bg-error bg-opacity-10 border border-error rounded-lg text-error">
-            {error}
-          </div>
-        )}
-
-        {/* Photo Upload */}
-        <div>
-          <label className="block text-base font-bold text-forest-900 mb-3 flex items-center gap-2">
-            <Camera className="w-5 h-5" />
-            Got a pic? <span className="font-normal text-charcoal-500">(optional)</span>
-          </label>
-          <ImageUploader
-            onImageSelect={setPhotoFile}
-            onRemove={() => setPhotoFile(null)}
-          />
-        </div>
-
-        {/* Custom Name */}
-        <div>
-          <label htmlFor="customName" className="block text-base font-bold text-forest-900 mb-2">
-            What should we call them? <span className="text-sunset-600">*</span>
-          </label>
-          <input
-            id="customName"
-            type="text"
-            value={customName}
-            onChange={(e) => setCustomName(e.target.value)}
-            placeholder="e.g., Monty, Big Phil, Gerald"
-            className="input-field"
-            required
-            maxLength={50}
-          />
-          <p className="text-sm text-charcoal-600 mt-2">Something you'll actually remember</p>
-        </div>
-
-        {/* Species Name */}
-        <div>
-          <label htmlFor="speciesName" className="block text-base font-bold text-forest-900 mb-2">
-            What kinda plant is this?
-          </label>
-          <input
-            id="speciesName"
-            type="text"
-            value={speciesName}
-            onChange={(e) => setSpeciesName(e.target.value)}
-            placeholder="e.g., Monstera deliciosa, Snake Plant"
-            className="input-field"
-            maxLength={100}
-          />
-          <p className="text-sm text-charcoal-600 mt-2">
-            Not sure? No stress — AI help coming soon 👀
-          </p>
-        </div>
-
-        {/* Location */}
-        <div>
-          <label htmlFor="location" className="block text-base font-bold text-forest-900 mb-2">
-            Where's this one living? <span className="text-sunset-600">*</span>
-          </label>
-          <input
-            id="location"
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="e.g., Living room, near east window"
-            className="input-field"
-            required
-            maxLength={100}
-          />
-        </div>
-
-        {/* Light Type - Card Based */}
-        <div>
-          <label className="block text-base font-bold text-forest-900 mb-3">
-            What's the light situation? <span className="text-sunset-600">*</span>
-          </label>
-          <div className="space-y-3">
-            <button
-              type="button"
-              onClick={() => setLightType('direct')}
-              className={`w-full p-4 rounded-2xl border-2 transition-all duration-200 text-left ${
-                lightType === 'direct'
-                  ? 'border-forest-500 bg-forest-50 shadow-soft'
-                  : 'border-charcoal-200 bg-white hover:border-forest-300 hover:shadow-soft'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  lightType === 'direct' ? 'bg-gradient-to-br from-sunset-400 to-sunset-600' : 'bg-charcoal-100'
-                }`}>
-                  <Sun className={`w-6 h-6 ${lightType === 'direct' ? 'text-white' : 'text-charcoal-500'}`} />
-                </div>
-                <div className="flex-1">
-                  <div className="font-bold text-forest-900 flex items-center gap-2">
-                    ☀️ Direct
-                  </div>
-                  <div className="text-sm text-charcoal-600">Direct sun, most of the day</div>
-                </div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setLightType('indirect')}
-              className={`w-full p-4 rounded-2xl border-2 transition-all duration-200 text-left ${
-                lightType === 'indirect'
-                  ? 'border-forest-500 bg-forest-50 shadow-soft'
-                  : 'border-charcoal-200 bg-white hover:border-forest-300 hover:shadow-soft'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  lightType === 'indirect' ? 'bg-gradient-to-br from-sage-400 to-sage-600' : 'bg-charcoal-100'
-                }`}>
-                  <Cloud className={`w-6 h-6 ${lightType === 'indirect' ? 'text-white' : 'text-charcoal-500'}`} />
-                </div>
-                <div className="flex-1">
-                  <div className="font-bold text-forest-900 flex items-center gap-2">
-                    🌤️ Indirect
-                  </div>
-                  <div className="text-sm text-charcoal-600">Bright, but no direct blasting</div>
-                </div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setLightType('low')}
-              className={`w-full p-4 rounded-2xl border-2 transition-all duration-200 text-left ${
-                lightType === 'low'
-                  ? 'border-forest-500 bg-forest-50 shadow-soft'
-                  : 'border-charcoal-200 bg-white hover:border-forest-300 hover:shadow-soft'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  lightType === 'low' ? 'bg-gradient-to-br from-charcoal-400 to-charcoal-600' : 'bg-charcoal-100'
-                }`}>
-                  <CloudOff className={`w-6 h-6 ${lightType === 'low' ? 'text-white' : 'text-charcoal-500'}`} />
-                </div>
-                <div className="flex-1">
-                  <div className="font-bold text-forest-900 flex items-center gap-2">
-                    🌥️ Low
-                  </div>
-                  <div className="text-sm text-charcoal-600">Low light, kinda dim</div>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Proximity to Window */}
-        <div>
-          <label htmlFor="proximity" className="block text-sm font-medium text-text mb-2">
-            How close to a window? <span className="text-error">*</span>
-          </label>
-          <select
-            id="proximity"
-            value={proximity}
-            onChange={(e) => setProximity(e.target.value as any)}
-            className="input-field"
-          >
-            <option value="on_sill">On the windowsill</option>
-            <option value="near">Near window (1-3 feet)</option>
-            <option value="far">Far from window (3+ feet)</option>
-          </select>
-        </div>
-
-        {/* Submit Buttons */}
-        <div className="space-y-3 pt-6">
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary w-full"
-          >
-            {loading ? 'Adding your plant...' : 'Add This Plant ✨'}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => navigate('/home')}
-            disabled={loading}
-            className="btn-ghost w-full"
-          >
-            Not feeling it? Go back
-          </button>
-        </div>
-      </form>
     </div>
   )
 }
