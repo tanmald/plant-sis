@@ -8,29 +8,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-interface AnalysisRequest {
-  imageUrl?: string  // For existing HTTPS URLs
-  imageBase64?: string  // For local file uploads
-  mediaType?: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'
-  plantData?: {
-    plant_id?: string
-    custom_name?: string
-    species?: string
-    location?: string
-  }
-  analysisType: 'initial_identification' | 'check_in_photo' | 'health_monitoring'
-}
-
-interface AnalysisResponse {
-  species?: string
-  confidence?: number
-  healthStatus: 'thriving' | 'good' | 'at_risk' | 'critical'
-  insights: string[]
-  recommendations: string[]
-  riskFlags: string[]
-  nextCheckInDays: number
-}
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
