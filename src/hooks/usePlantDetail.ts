@@ -41,6 +41,18 @@ interface PlantIdentification {
   created_at: string
 }
 
+interface AIAnalysis {
+  id: string
+  plant_id: string
+  health_status: 'thriving' | 'good' | 'at_risk' | 'critical'
+  insights: string[]
+  recommendations: string[]
+  risk_flags: string[]
+  identified_species: string | null
+  confidence_score: number | null
+  created_at: string
+}
+
 export function usePlantDetail(plantId: string) {
   return useQuery({
     queryKey: ['plant', plantId],
@@ -94,11 +106,30 @@ export function usePlantDetail(plantId: string) {
 
       if (identificationsError) throw identificationsError
 
+      // Fetch latest AI analysis
+      const { data: latestAnalysis } = await supabase
+        .from('ai_plant_analyses')
+        .select('*')
+        .eq('plant_id', plantId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
+
+      // Fetch analysis history (last 5)
+      const { data: analysisHistory } = await supabase
+        .from('ai_plant_analyses')
+        .select('id, health_status, created_at')
+        .eq('plant_id', plantId)
+        .order('created_at', { ascending: false })
+        .limit(5)
+
       return {
         plant: plant as Plant,
         photos: photos as (PlantPhoto & { public_url: string })[],
         checkIns: (checkIns || []) as CheckIn[],
         identifications: (identifications || []) as PlantIdentification[],
+        latestAnalysis: latestAnalysis as AIAnalysis | null,
+        analysisHistory: (analysisHistory || []) as Pick<AIAnalysis, 'id' | 'health_status' | 'created_at'>[],
       }
     },
     enabled: !!plantId,

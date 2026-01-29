@@ -1,12 +1,18 @@
+import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Camera, MapPin, Sun, Calendar, Sparkles, Heart, TrendingUp, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, Camera, MapPin, Sun, Calendar, Sparkles, Heart, TrendingUp, AlertTriangle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { PhotoCarousel } from '@/components/plants/PhotoCarousel'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { usePlantDetail } from '@/hooks/usePlantDetail'
+import { useAIAnalysis } from '@/hooks/useAIAnalysis'
+import { AIFeatureGate } from '@/components/AIFeatureGate'
 import { toast } from 'sonner'
+import { formatDistanceToNow } from 'date-fns'
+import { cn } from '@/lib/utils'
+import { useQueryClient } from '@tanstack/react-query'
 
 const getLightTypeLabel = (type: string) => {
   const labels: Record<string, string> = {
@@ -20,7 +26,10 @@ const getLightTypeLabel = (type: string) => {
 export default function PlantDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data, isLoading, error, refetch } = usePlantDetail(id || '')
+  const aiAnalysis = useAIAnalysis()
+  const [analyzing, setAnalyzing] = useState(false)
 
   if (isLoading) {
     return (
@@ -55,7 +64,7 @@ export default function PlantDetail() {
     )
   }
 
-  const { plant, photos, checkIns, identifications } = data
+  const { plant, photos, checkIns, identifications, latestAnalysis } = data
 
   // Calculate derived values
   const daysSinceAdded = Math.floor((Date.now() - new Date(plant.created_at).getTime()) / (1000 * 60 * 60 * 24))
@@ -63,6 +72,54 @@ export default function PlantDetail() {
   const daysSinceCheckIn = lastCheckIn
     ? Math.floor((Date.now() - new Date(lastCheckIn.check_in_date).getTime()) / (1000 * 60 * 60 * 24))
     : null
+
+  const handleAnalyzeHealth = async () => {
+    if (!photos?.length) {
+      toast.error('No photo available', {
+        description: 'Add a photo first to analyze plant health'
+      })
+      return
+    }
+
+    setAnalyzing(true)
+    try {
+      // Get latest photo's public URL
+      const latestPhoto = photos[0]
+
+      // Fetch the image and convert to base64
+      const response = await fetch(latestPhoto.public_url)
+      const blob = await response.blob()
+      const reader = new FileReader()
+      const base64Promise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => {
+          const result = reader.result as string
+          resolve(result.split(',')[1])
+        }
+        reader.onerror = reject
+      })
+      reader.readAsDataURL(blob)
+      const imageBase64 = await base64Promise
+
+      await aiAnalysis.mutateAsync({
+        imageBase64,
+        mediaType: blob.type as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+        analysisType: 'health_monitoring',
+        plantData: {
+          plant_id: plant.id,
+          custom_name: plant.custom_name,
+          species: plant.species_name || undefined,
+          location: plant.location
+        }
+      })
+
+      // Refetch plant data to get updated analysis
+      queryClient.invalidateQueries({ queryKey: ['plant', id] })
+    } catch (error) {
+      console.error('Health analysis error:', error)
+    } finally {
+      setAnalyzing(false)
+    }
+  }
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
@@ -147,11 +204,16 @@ export default function PlantDetail() {
         <Button
           variant="outline"
           className="h-16 rounded-2xl"
-          onClick={() => toast.info('AI Identify coming soon! 🌿')}
+          onClick={handleAnalyzeHealth}
+          disabled={analyzing || !photos?.length}
         >
           <div className="text-center">
-            <Sparkles className="w-5 h-5 mx-auto mb-1" />
-            <span className="text-sm">AI Identify</span>
+            {analyzing ? (
+              <Loader2 className="w-5 h-5 mx-auto mb-1 animate-spin" />
+            ) : (
+              <Sparkles className="w-5 h-5 mx-auto mb-1" />
+            )}
+            <span className="text-sm">{analyzing ? 'Analyzing...' : 'AI Health'}</span>
           </div>
         </Button>
       </div>
@@ -194,6 +256,115 @@ export default function PlantDetail() {
           </CardContent>
         </Card>
       )}
+
+      {/* AI Health Analysis */}
+      <AIFeatureGate feature="analysis">
+        <Card className="border-0 shadow-warm">
+          <CardHeader>
+            <CardTitle className="font-display text-xl flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-honey" />
+              AI Health Analysis
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {latestAnalysis ? (
+              <>
+                {/* Health Status Badge */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Current Status</span>
+                  <Badge className={cn(
+                    "capitalize",
+                    latestAnalysis.health_status === 'thriving' && "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100",
+                    latestAnalysis.health_status === 'good' && "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100",
+                    latestAnalysis.health_status === 'at_risk' && "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100",
+                    latestAnalysis.health_status === 'critical' && "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
+                  )}>
+                    {latestAnalysis.health_status === 'at_risk' ? 'Needs Attention' : latestAnalysis.health_status}
+                  </Badge>
+                </div>
+
+                {/* Risk Flags */}
+                {latestAnalysis.risk_flags?.length > 0 && (
+                  <div className="p-3 bg-destructive/10 rounded-xl space-y-2">
+                    <div className="flex items-center gap-2 text-destructive font-medium">
+                      <AlertTriangle className="w-4 h-4" />
+                      Attention Needed
+                    </div>
+                    <ul className="text-sm space-y-1">
+                      {latestAnalysis.risk_flags.map((flag: string, i: number) => (
+                        <li key={i}>• {flag}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Insights */}
+                {latestAnalysis.insights?.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">Insights</p>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      {latestAnalysis.insights.slice(0, 3).map((insight: string, i: number) => (
+                        <li key={i}>• {insight}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Recommendations */}
+                {latestAnalysis.recommendations?.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">Care Tips</p>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      {latestAnalysis.recommendations.slice(0, 3).map((rec: string, i: number) => (
+                        <li key={i}>• {rec}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Last Analyzed + Re-analyze button */}
+                <div className="flex items-center justify-between pt-2">
+                  <p className="text-xs text-muted-foreground">
+                    Analyzed {formatDistanceToNow(new Date(latestAnalysis.created_at), { addSuffix: true })}
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleAnalyzeHealth}
+                    disabled={analyzing || !photos?.length}
+                  >
+                    {analyzing ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      'Re-analyze'
+                    )}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-muted-foreground mb-4">No health analysis yet</p>
+                <Button
+                  onClick={handleAnalyzeHealth}
+                  disabled={analyzing || !photos?.length}
+                >
+                  {analyzing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Analyze Now
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </AIFeatureGate>
 
       {/* AI Identification History */}
       {identifications.length > 0 && (

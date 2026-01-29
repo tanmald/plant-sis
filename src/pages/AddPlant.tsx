@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Camera, Sparkles, MapPin, Sun, Ruler, Check, Cloud, CloudOff } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Sparkles, MapPin, Sun, Ruler, Check, Cloud, CloudOff, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,6 +11,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { uploadPlantPhoto } from '../lib/storage'
 import ImageUploader from '../components/ImageUploader'
 import { toast } from 'sonner'
+import { useAIAnalysis } from '@/hooks/useAIAnalysis'
 
 const STEPS = [
   { id: 'photo', title: 'Photo', icon: Camera },
@@ -46,6 +47,8 @@ export default function AddPlant() {
   const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [aiIdentifying, setAiIdentifying] = useState(false)
+  const aiAnalysis = useAIAnalysis()
 
   const [formData, setFormData] = useState({
     custom_name: '',
@@ -143,6 +146,47 @@ export default function AddPlant() {
     }
   }
 
+  const handleAIIdentify = async () => {
+    if (!formData.photo || !user) return
+
+    setAiIdentifying(true)
+
+    try {
+      // Convert file to base64
+      const reader = new FileReader()
+      const base64Promise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => {
+          const result = reader.result as string
+          // Remove "data:image/...;base64," prefix
+          const base64 = result.split(',')[1]
+          resolve(base64)
+        }
+        reader.onerror = reject
+      })
+      reader.readAsDataURL(formData.photo)
+      const imageBase64 = await base64Promise
+
+      const result = await aiAnalysis.mutateAsync({
+        imageBase64,
+        mediaType: formData.photo.type as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+        analysisType: 'initial_identification'
+      })
+
+      // Pre-fill species name from AI result
+      if (result.species) {
+        updateFormData('species_name', result.species)
+        toast.success('Plant identified!', {
+          description: `Looks like a ${result.species}`
+        })
+      }
+    } catch (error) {
+      // Error handling already done in useAIAnalysis hook
+      console.error('AI identify error:', error)
+    } finally {
+      setAiIdentifying(false)
+    }
+  }
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
@@ -161,9 +205,23 @@ export default function AddPlant() {
             </div>
 
             <div className="flex gap-4 justify-center">
-              <Button variant="outline" className="rounded-xl" disabled>
-                <Sparkles className="w-4 h-4 mr-2" />
-                AI Identify (Coming Soon)
+              <Button
+                variant="outline"
+                className="rounded-xl"
+                disabled={!formData.photo || aiIdentifying}
+                onClick={handleAIIdentify}
+              >
+                {aiIdentifying ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Identifying...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    AI Identify
+                  </>
+                )}
               </Button>
             </div>
 
@@ -205,7 +263,7 @@ export default function AddPlant() {
                   maxLength={100}
                 />
                 <p className="text-xs text-charcoal-500 text-center">
-                  Not sure? Use AI Identify! ✨ (Coming soon)
+                  Not sure? Use AI Identify in Step 1! ✨
                 </p>
               </div>
             </div>
