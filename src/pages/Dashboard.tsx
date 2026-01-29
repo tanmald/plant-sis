@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Plus, Leaf, Search, Droplets, TrendingUp, AlertTriangle } from "lucide-react";
+import { Plus, Leaf, Search, Droplets, TrendingUp, AlertTriangle, Bell } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { PlantCard } from "@/components/plants/PlantCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { usePlants } from "@/hooks/usePlants";
@@ -33,6 +34,28 @@ export default function Dashboard() {
         .select('*', { count: 'exact', head: true })
         .gte('check_in_date', startOfMonth.toISOString());
       return count || 0;
+    },
+    enabled: !!user,
+  });
+
+  // Fetch plants due for check-in
+  const { data: plantsDueForCheckIn = [] } = useQuery({
+    queryKey: ['plants-due-checkin', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const now = new Date().toISOString();
+      const { data } = await supabase
+        .from('check_in_schedules')
+        .select('plant_id, next_check_in_date, snoozed_until')
+        .lte('next_check_in_date', now);
+
+      // Filter out snoozed plants
+      const duePlants = (data || []).filter(schedule => {
+        if (!schedule.snoozed_until) return true;
+        return new Date(schedule.snoozed_until) <= new Date();
+      });
+
+      return duePlants;
     },
     enabled: !!user,
   });
@@ -86,6 +109,30 @@ export default function Dashboard() {
           )}
         </p>
       </div>
+
+      {/* Plants Due for Check-in Banner */}
+      {plantsDueForCheckIn.length > 0 && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Bell className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium">
+                  {plantsDueForCheckIn.length} plant{plantsDueForCheckIn.length > 1 ? 's' : ''} due for check-in
+                </p>
+                <p className="text-sm text-muted-foreground">Time to see how they're doing!</p>
+              </div>
+              <Button asChild size="sm">
+                <Link to={`/check-in/${plantsDueForCheckIn[0].plant_id}`}>
+                  Check In
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -150,7 +197,11 @@ export default function Dashboard() {
       {filteredPlants.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
           {filteredPlants.map((plant) => (
-            <PlantCard key={plant.id} plant={plant} />
+            <PlantCard
+              key={plant.id}
+              plant={plant}
+              isDueForCheckIn={plantsDueForCheckIn.some(p => p.plant_id === plant.id)}
+            />
           ))}
         </div>
       ) : plants.length === 0 ? (

@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Camera, MapPin, Sun, Calendar, Sparkles, Heart, TrendingUp, AlertTriangle, Loader2 } from 'lucide-react'
+import { ArrowLeft, Camera, MapPin, Sun, Calendar, Sparkles, Heart, TrendingUp, AlertTriangle, Loader2, Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { PhotoCarousel } from '@/components/plants/PhotoCarousel'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { usePlantDetail } from '@/hooks/usePlantDetail'
-import { useAIAnalysis } from '@/hooks/useAIAnalysis'
+import { useAIAnalysis, useCheckInPrompt, useSnoozeCheckIn } from '@/hooks/useAIAnalysis'
 import { AIFeatureGate } from '@/components/AIFeatureGate'
 import { toast } from 'sonner'
 import { formatDistanceToNow } from 'date-fns'
@@ -29,6 +29,8 @@ export default function PlantDetail() {
   const queryClient = useQueryClient()
   const { data, isLoading, error, refetch } = usePlantDetail(id || '')
   const aiAnalysis = useAIAnalysis()
+  const { data: isDueForCheckIn } = useCheckInPrompt(id)
+  const snoozeCheckIn = useSnoozeCheckIn()
   const [analyzing, setAnalyzing] = useState(false)
 
   if (isLoading) {
@@ -190,6 +192,36 @@ export default function PlantDetail() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Check-in Due Banner */}
+      {isDueForCheckIn && (
+        <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
+                <Bell className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-amber-900 dark:text-amber-100">Time for a check-in!</p>
+                <p className="text-sm text-amber-700 dark:text-amber-300">See how {plant.custom_name} is doing</p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => snoozeCheckIn.mutate({ plantId: id!, days: 3 })}
+                  disabled={snoozeCheckIn.isPending}
+                >
+                  Snooze
+                </Button>
+                <Button asChild size="sm">
+                  <Link to={`/check-in/${id}`}>Check In</Link>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-4">

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Calendar, Heart, AlertTriangle } from "lucide-react";
+import { MapPin, Calendar, Heart, AlertTriangle, Bell } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ interface PlantCardProps {
     last_check_in?: Date | string | null;
     health_status: "thriving" | "good" | "needs_attention";
   };
+  isDueForCheckIn?: boolean;
 }
 
 const healthConfig = {
@@ -56,7 +57,7 @@ const getPlantEmoji = (species: string) => {
   return "🌱";
 };
 
-export function PlantCard({ plant }: PlantCardProps) {
+export function PlantCard({ plant, isDueForCheckIn }: PlantCardProps) {
   const health = healthConfig[plant.health_status];
   const HealthIcon = health.icon;
   const emoji = getPlantEmoji(plant.species_common_name || plant.custom_name || "plant");
@@ -83,7 +84,17 @@ export function PlantCard({ plant }: PlantCardProps) {
           ) : (
             <span className="text-5xl hover-wiggle">{emoji}</span>
           )}
-          
+
+          {/* Check-in due badge */}
+          {isDueForCheckIn && (
+            <div className="absolute top-3 left-3 z-10">
+              <Badge className="bg-amber-500 text-white border-0 shadow-md gap-1">
+                <Bell className="w-3 h-3" />
+                Check-in due
+              </Badge>
+            </div>
+          )}
+
           {/* Health badge overlay */}
           <div className="absolute top-3 right-3">
             <Badge className={cn(health.bgColor, health.color, "border-0 gap-1")}>
