@@ -119,11 +119,11 @@ export class AIPlantService {
       throw new Error('Failed to fetch AI quota')
     }
 
-    const tier = profile?.subscription_tier || 'free'
+    const tier = (profile?.subscription_tier || 'free') as 'free' | 'pro'
     const used = profile?.ai_analyses_used_this_month || 0
     const checkInsUsed = profile?.check_ins_used_this_month || 0
 
-    const limits = {
+    const limits: Record<'free' | 'pro', number> = {
       free: 3,
       pro: Infinity
     }
