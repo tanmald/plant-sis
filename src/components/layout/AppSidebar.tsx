@@ -12,6 +12,7 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const navItems = [
   { title: "My Plants", url: "/", icon: Home },
@@ -26,14 +27,17 @@ export function AppSidebar() {
     <Sidebar className="hidden md:flex border-r border-sidebar-border">
       {/* Logo Header */}
       <SidebarHeader className="p-6 border-b border-sidebar-border">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shadow-sage">
-            <Leaf className="w-5 h-5 text-secondary-foreground" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shadow-sage">
+              <Leaf className="w-5 h-5 text-secondary-foreground" />
+            </div>
+            <div>
+              <h1 className="font-display font-bold text-xl text-sidebar-foreground">PlantSis</h1>
+              <p className="text-xs text-muted-foreground font-handwritten">your sassy plant bestie ✨</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-display font-bold text-xl text-sidebar-foreground">PlantSis</h1>
-            <p className="text-xs text-muted-foreground font-handwritten">your sassy plant bestie ✨</p>
-          </div>
+          <NotificationBell variant="sidebar" />
         </div>
       </SidebarHeader>
 

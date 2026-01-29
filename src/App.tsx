@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 
 // Context
 import { AuthProvider } from './contexts/AuthContext'
+import { NotificationProvider } from './contexts/NotificationContext'
 
 // Components
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
@@ -41,7 +42,9 @@ function App() {
           <Route
             element={
               <ProtectedRoute>
-                <AppLayout />
+                <NotificationProvider>
+                  <AppLayout />
+                </NotificationProvider>
               </ProtectedRoute>
             }
           >
