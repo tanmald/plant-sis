@@ -22,7 +22,7 @@
     box-sizing: border-box;
   }
   :root {
-    /* PlantSis brand colors - Warm Earthy Aesthetic 🌿 */
+    /* PlantBestie brand colors - Warm Earthy Aesthetic 🌿 */
     --background: 35 30% 96%; /* Warm cream/beige */
     --foreground: 25 40% 16%; /* Rich brown */
     --card: 40 25% 98%; /* Slightly warmer white */
@@ -49,7 +49,7 @@
     --chart-5: 330 60% 75%;
     --radius: 1rem;
 
-    /* Custom PlantSis theme tokens */
+    /* Custom PlantBestie theme tokens */
     --honey: 40 75% 55%;
     --honey-foreground: 25 40% 16%;
     --sage-light: 85 20% 85%;

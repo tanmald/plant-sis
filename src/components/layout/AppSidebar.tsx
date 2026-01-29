@@ -1,5 +1,7 @@
+import { useMemo } from "react";
 import { Home, Plus, User, Leaf, Sparkles } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
+import { getRandomTip } from "@/lib/plant-tips";
 import {
   Sidebar,
   SidebarContent,
@@ -22,6 +24,7 @@ const navItems = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const plantTip = useMemo(() => getRandomTip(), []);
   
   return (
     <Sidebar className="hidden md:flex border-r border-sidebar-border">
@@ -33,8 +36,8 @@ export function AppSidebar() {
               <Leaf className="w-5 h-5 text-secondary-foreground" />
             </div>
             <div>
-              <h1 className="font-display font-bold text-xl text-sidebar-foreground">PlantSis</h1>
-              <p className="text-xs text-muted-foreground font-handwritten">your sassy plant bestie ✨</p>
+              <h1 className="font-display font-bold text-xl text-sidebar-foreground">PlantBestie</h1>
+              <p className="text-xs text-muted-foreground font-handwritten">your sassy plant companion ✨</p>
             </div>
           </div>
           <NotificationBell variant="sidebar" />
@@ -78,7 +81,7 @@ export function AppSidebar() {
         <div className="gradient-sage rounded-xl p-4">
           <p className="font-handwritten text-lg text-secondary">💡 Plant Tip</p>
           <p className="text-xs text-muted-foreground mt-1">
-            Talk to your plants! They love the CO₂ (and the attention 💅)
+            {plantTip}
           </p>
         </div>
       </SidebarFooter>

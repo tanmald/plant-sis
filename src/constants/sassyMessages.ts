@@ -1,4 +1,4 @@
-// Sassy messages for PlantSis personality
+// Sassy messages for PlantBestie personality
 
 export const WELCOME_MESSAGES = [
   "Hey 👀 Ready to keep your plants alive?",

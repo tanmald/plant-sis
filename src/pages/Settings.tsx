@@ -6,7 +6,6 @@ import {
   Moon,
   Monitor,
   Bell,
-  Clock,
   User as UserIcon,
   Trash2,
   LogOut,
@@ -17,10 +16,8 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
@@ -48,7 +45,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { useSettings } from '@/contexts/SettingsContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { supabase } from '@/lib/supabase'
@@ -60,22 +56,12 @@ export default function Settings() {
   const { theme, setTheme } = useTheme()
   const { user, signOut } = useAuth()
   const { profile } = useUserProfile()
-  const {
-    compactMode,
-    setCompactMode,
-    wateringReminders,
-    setWateringReminders,
-    checkInReminders,
-    setCheckInReminders,
-    reminderTime,
-    setReminderTime,
-  } = useSettings()
 
   const [editNameOpen, setEditNameOpen] = useState(false)
   const [newDisplayName, setNewDisplayName] = useState(profile?.display_name || '')
   const [isUpdatingName, setIsUpdatingName] = useState(false)
 
-  const plantTitle = getPlantTitle(profile?.identity_preference)
+  const plantTitle = getPlantTitle()
 
   const handleUpdateDisplayName = async () => {
     if (!user || !newDisplayName.trim()) return
@@ -106,7 +92,6 @@ export default function Settings() {
   }
 
   const handleSignOut = async () => {
-    const plantTitle = getPlantTitle(profile?.identity_preference)
     await signOut()
     toast.success(`See you later, ${plantTitle}! 👋`)
     navigate('/auth')
@@ -129,7 +114,7 @@ export default function Settings() {
             <SettingsIcon className="w-5 h-5" />
             Appearance
           </CardTitle>
-          <CardDescription>Customize how PlantSis looks for you</CardDescription>
+          <CardDescription>Customize how PlantBestie looks for you</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Theme Toggle */}
@@ -166,23 +151,6 @@ export default function Settings() {
               Choose your vibe: light, dark, or follow your device
             </p>
           </div>
-
-          {/* Compact Mode */}
-          <div className="flex items-center justify-between py-2">
-            <div className="space-y-0.5">
-              <Label htmlFor="compact-mode" className="text-sm font-semibold">
-                Compact Mode
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                Tighter spacing for more info on screen
-              </p>
-            </div>
-            <Switch
-              id="compact-mode"
-              checked={compactMode}
-              onCheckedChange={setCompactMode}
-            />
-          </div>
         </CardContent>
       </Card>
 
@@ -193,78 +161,13 @@ export default function Settings() {
             <Bell className="w-5 h-5 text-primary" />
             Notifications
           </CardTitle>
-          <CardDescription>Manage your plant care reminders</CardDescription>
+          <CardDescription>Stay updated on your plant care</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Watering Reminders */}
-          <div className="flex items-center justify-between py-2">
-            <div className="space-y-0.5 flex-1">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="watering-reminders" className="text-sm font-semibold">
-                  Watering Reminders
-                </Label>
-                <Badge variant="secondary" className="text-xs">
-                  Coming soon
-                </Badge>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Keep your plant babies hydrated 💧
-              </p>
-            </div>
-            <Switch
-              id="watering-reminders"
-              checked={wateringReminders}
-              onCheckedChange={setWateringReminders}
-              disabled
-            />
-          </div>
-
-          {/* Check-in Reminders */}
-          <div className="flex items-center justify-between py-2">
-            <div className="space-y-0.5 flex-1">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="checkin-reminders" className="text-sm font-semibold">
-                  Check-in Reminders
-                </Label>
-                <Badge variant="secondary" className="text-xs">
-                  Coming soon
-                </Badge>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Never forget to check on your plants
-              </p>
-            </div>
-            <Switch
-              id="checkin-reminders"
-              checked={checkInReminders}
-              onCheckedChange={setCheckInReminders}
-              disabled
-            />
-          </div>
-
-          {/* Reminder Time */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="reminder-time" className="text-sm font-semibold">
-                <Clock className="w-4 h-4 inline mr-1" />
-                Reminder Time
-              </Label>
-              <Badge variant="secondary" className="text-xs">
-                Coming soon
-              </Badge>
-            </div>
-            <Input
-              id="reminder-time"
-              type="time"
-              value={reminderTime}
-              onChange={(e) => setReminderTime(e.target.value)}
-              className="h-12 rounded-xl"
-              disabled
-            />
-            <p className="text-xs text-muted-foreground">
-              When should we remind you?
-            </p>
-          </div>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            Notifications appear in the bell icon when your plants need attention.
+            Check-in reminders are automatically scheduled based on your plant's needs.
+          </p>
         </CardContent>
       </Card>
 
@@ -310,7 +213,7 @@ export default function Settings() {
                       id="display-name"
                       value={newDisplayName}
                       onChange={(e) => setNewDisplayName(e.target.value)}
-                      placeholder="e.g., Plant Parent Sarah"
+                      placeholder="e.g., Sarah"
                       className="h-12 rounded-xl"
                     />
                   </div>

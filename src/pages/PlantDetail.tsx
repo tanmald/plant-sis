@@ -1,9 +1,21 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Camera, MapPin, Sun, Calendar, Sparkles, Heart, TrendingUp, AlertTriangle, Loader2, Bell } from 'lucide-react'
+import { ArrowLeft, Camera, MapPin, Sun, Calendar, Sparkles, Heart, TrendingUp, AlertTriangle, Loader2, Bell, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { supabase } from '@/lib/supabase'
 import { PhotoCarousel } from '@/components/plants/PhotoCarousel'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { usePlantDetail } from '@/hooks/usePlantDetail'
@@ -75,6 +87,22 @@ export default function PlantDetail() {
     ? Math.floor((Date.now() - new Date(lastCheckIn.check_in_date).getTime()) / (1000 * 60 * 60 * 24))
     : null
 
+  const handleDelete = async () => {
+    const { error } = await supabase
+      .from('plants')
+      .delete()
+      .eq('id', plant.id)
+
+    if (error) {
+      toast.error('Failed to delete plant')
+      return
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['plants'] })
+    toast.success(`${plant.custom_name} removed from your garden`)
+    navigate('/')
+  }
+
   const handleAnalyzeHealth = async () => {
     if (!photos?.length) {
       toast.error('No photo available', {
@@ -125,14 +153,43 @@ export default function PlantDetail() {
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
-      {/* Back Button */}
-      <Link
-        to="/"
-        className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back to plants</span>
-      </Link>
+      {/* Header with Back Button and Delete */}
+      <div className="flex items-center justify-between">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to plants</span>
+        </Link>
+
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+              <Trash2 className="w-4 h-4 mr-1" />
+              Delete
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete {plant.custom_name}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently remove {plant.custom_name} and all its photos, check-ins, and history.
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                Delete Plant
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
 
       {/* Hero Section */}
       <div className="relative">

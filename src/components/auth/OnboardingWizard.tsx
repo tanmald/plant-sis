@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Leaf, Sun, Sparkles, ArrowRight, Check, User } from "lucide-react";
+import { Leaf, Sun, Sparkles, ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { cn, IDENTITY_OPTIONS } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface OnboardingWizardProps {
   onComplete: (displayName: string, identityPreference: string, experienceLevel: string) => void;
@@ -14,9 +13,8 @@ interface OnboardingWizardProps {
 const steps = [
   { id: 1, title: "Welcome", icon: Leaf },
   { id: 2, title: "Your Name", icon: Sparkles },
-  { id: 3, title: "Identity", icon: User },
-  { id: 4, title: "Experience", icon: Sun },
-  { id: 5, title: "Ready!", icon: Check },
+  { id: 3, title: "Experience", icon: Sun },
+  { id: 4, title: "Ready!", icon: Check },
 ];
 
 const experienceLevels = [
@@ -28,7 +26,6 @@ const experienceLevels = [
 export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [displayName, setDisplayName] = useState("");
-  const [identity, setIdentity] = useState<string>("prefer-not-to-say");
   const [experience, setExperience] = useState("");
 
   const progress = (currentStep / steps.length) * 100;
@@ -40,7 +37,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   };
 
   const handleComplete = () => {
-    onComplete(displayName || "Plant Lover", identity, experience);
+    // Pass empty string for identity preference (no longer used)
+    onComplete(displayName || "Plant Lover", "prefer-not-to-say", experience);
   };
 
   const canProceed = () => {
@@ -50,10 +48,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       case 2:
         return displayName.trim().length > 0;
       case 3:
-        return identity !== "";
-      case 4:
         return experience !== "";
-      case 5:
+      case 4:
         return true;
       default:
         return false;
@@ -65,7 +61,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       {/* Decorative elements */}
       <div className="absolute top-10 left-10 text-6xl opacity-20 animate-wiggle">🌿</div>
       <div className="absolute bottom-10 right-10 text-5xl opacity-20 animate-wiggle" style={{ animationDelay: "0.5s" }}>🪴</div>
-      
+
       <div className="w-full max-w-lg">
         {/* Progress */}
         <div className="mb-8">
@@ -94,9 +90,9 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                 <Leaf className="w-10 h-10 text-secondary-foreground" />
               </div>
               <div>
-                <h1 className="font-display text-3xl mb-2">Welcome to PlantSis! 🌿</h1>
+                <h1 className="font-display text-3xl mb-2">Welcome to PlantBestie! 🌿</h1>
                 <p className="text-muted-foreground font-handwritten text-xl">
-                  Your new bestie for plant care ✨
+                  Your new companion for plant care ✨
                 </p>
               </div>
               <p className="text-foreground/80 max-w-sm">
@@ -115,7 +111,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                 <Label htmlFor="displayName">Your Name</Label>
                 <Input
                   id="displayName"
-                  placeholder="e.g., Plant Parent Sarah"
+                  placeholder="e.g., Sarah"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   className="h-12 rounded-xl text-center text-lg"
@@ -126,41 +122,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           )}
 
           {currentStep === 3 && (
-            <div className="flex-1 flex flex-col space-y-6">
-              <div className="text-center">
-                <h2 className="font-display text-2xl mb-2">How do you identify?</h2>
-                <p className="text-muted-foreground">
-                  Help us personalize your experience 💜<br/>
-                  <span className="text-xs">You can change this anytime</span>
-                </p>
-              </div>
-              <RadioGroup value={identity} onValueChange={setIdentity} className="space-y-3">
-                {IDENTITY_OPTIONS.map((option) => (
-                  <div
-                    key={option.value}
-                    className={cn(
-                      "flex items-center space-x-3 p-4 rounded-xl border-2 transition-all cursor-pointer",
-                      identity === option.value
-                        ? "border-primary bg-primary/10"
-                        : "border-border hover:border-primary/50 hover:bg-muted/50"
-                    )}
-                    onClick={() => setIdentity(option.value)}
-                  >
-                    <RadioGroupItem value={option.value} id={option.value} />
-                    <Label htmlFor={option.value} className="flex-1 cursor-pointer">
-                      <div className="font-semibold">{option.label}</div>
-                      <div className="text-sm text-muted-foreground">{option.description}</div>
-                      <div className="text-xs text-primary mt-1">
-                        We'll call you: <span className="font-handwritten">{option.title}</span>
-                      </div>
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-          )}
-
-          {currentStep === 4 && (
             <div className="flex-1 flex flex-col space-y-6">
               <div className="text-center">
                 <h2 className="font-display text-2xl mb-2">What's your plant experience?</h2>
@@ -186,16 +147,13 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
             </div>
           )}
 
-          {currentStep === 5 && (
+          {currentStep === 4 && (
             <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6">
               <div className="text-6xl animate-wiggle">🎉</div>
               <div>
                 <h2 className="font-display text-3xl mb-2">You're all set, {displayName || "bestie"}!</h2>
                 <p className="text-muted-foreground font-handwritten text-xl">
                   Time to grow your plant fam ✨
-                </p>
-                <p className="text-sm text-primary mt-2">
-                  We'll call you: {IDENTITY_OPTIONS.find(o => o.value === identity)?.title} 💚
                 </p>
               </div>
               <div className="flex gap-3 text-4xl">

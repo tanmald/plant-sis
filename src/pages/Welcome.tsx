@@ -10,9 +10,9 @@ export default function Welcome() {
       <div className="text-8xl mb-8 animate-bounce-soft">🌿</div>
 
       {/* App Name */}
-      <h1 className="text-5xl md:text-6xl font-black text-foreground mb-3 text-center">PlantSis</h1>
+      <h1 className="text-5xl md:text-6xl font-black text-foreground mb-3 text-center">PlantBestie</h1>
       <p className="text-xl text-charcoal-600 mb-16 text-center max-w-md">
-        Your plant bestie with zero judgment and all the vibes
+        Your plant companion with zero judgment and all the vibes
       </p>
 
       {/* Value Props - Glass Cards */}

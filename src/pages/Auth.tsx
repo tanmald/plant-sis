@@ -176,7 +176,7 @@ export default function Auth() {
           </form>
 
           <p className="text-center text-sm text-muted-foreground pt-4">
-            {isLogin ? "New to PlantSis?" : "Already have an account?"}{" "}
+            {isLogin ? "New to PlantBestie?" : "Already have an account?"}{" "}
             <button
               type="button"
               onClick={() => {

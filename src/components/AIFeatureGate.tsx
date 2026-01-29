@@ -95,7 +95,7 @@ function UpgradeCard({ quota, feature }: { quota: any; feature: string }) {
               <div className="flex items-start gap-3 mb-3">
                 <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold mb-2">PlantSis Pro</h4>
+                  <h4 className="font-semibold mb-2">PlantBestie Pro</h4>
                   <ul className="text-sm space-y-1.5 text-muted-foreground">
                     <li className="flex items-center gap-2">
                       <span className="text-primary">✓</span>

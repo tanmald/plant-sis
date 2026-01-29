@@ -1,21 +1,16 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { User, Crown, Sparkles, Leaf, Camera, TrendingUp, LogOut, Settings, Edit2 } from 'lucide-react'
+import { User, Crown, Sparkles, Leaf, Camera, TrendingUp, LogOut, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
 import { useAuth } from '../contexts/AuthContext'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { toast } from 'sonner'
 import { useUserProfile } from '@/hooks/useUserProfile'
-import { getPlantTitle, IDENTITY_OPTIONS } from '@/lib/utils'
-import { cn } from '@/lib/utils'
+import { getPlantTitle } from '@/lib/utils'
 
 const SUBSCRIPTION_TIERS = {
   free: { name: 'Seedling 🌱', color: 'bg-secondary', aiLimit: 5 },
@@ -25,9 +20,7 @@ const SUBSCRIPTION_TIERS = {
 export default function Profile() {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
-  const { profile, updateIdentityPreference } = useUserProfile()
-  const [editIdentityOpen, setEditIdentityOpen] = useState(false)
-  const [selectedIdentity, setSelectedIdentity] = useState<string>('')
+  const { profile } = useUserProfile()
 
   // Fetch plants count
   const { data: plantsCount = 0 } = useQuery({
@@ -62,21 +55,9 @@ export default function Profile() {
   })
 
   const handleSignOut = async () => {
-    const plantTitle = getPlantTitle(profile?.identity_preference)
     await signOut()
-    toast.success(`See you later, ${plantTitle}! 👋`)
+    toast.success(`See you later, ${getPlantTitle()}! 👋`)
     navigate('/auth')
-  }
-
-  const handleSaveIdentity = async () => {
-    try {
-      await updateIdentityPreference(selectedIdentity)
-      const newTitle = getPlantTitle(selectedIdentity as any)
-      toast.success(`Updated! We'll call you ${newTitle} now 💚`)
-      setEditIdentityOpen(false)
-    } catch (error) {
-      toast.error('Failed to update preference. Try again?')
-    }
   }
 
   const tier = SUBSCRIPTION_TIERS[(profile?.subscription_tier as keyof typeof SUBSCRIPTION_TIERS) || 'free']
@@ -85,7 +66,6 @@ export default function Profile() {
   const daysSinceJoined = profile?.created_at
     ? Math.floor((Date.now() - new Date(profile.created_at).getTime()) / (1000 * 60 * 60 * 24))
     : 0
-  const plantTitle = getPlantTitle(profile?.identity_preference)
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
@@ -98,7 +78,7 @@ export default function Profile() {
 
         <div>
           <h1 className="font-display text-3xl">
-            {profile?.display_name || user?.email?.split('@')[0] || plantTitle}
+            {profile?.display_name || user?.email?.split('@')[0] || getPlantTitle()}
           </h1>
           <p className="text-muted-foreground">{user?.email}</p>
         </div>
@@ -179,76 +159,6 @@ export default function Profile() {
           </CardContent>
         </Card>
       )}
-
-      {/* Identity Preference Card */}
-      <Card className="border-0 shadow-sm">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-semibold mb-1">Identity Preference</h3>
-              <p className="text-sm text-muted-foreground">
-                We call you: <span className="font-handwritten text-primary">
-                  {getPlantTitle(profile?.identity_preference)}
-                </span>
-              </p>
-            </div>
-            <Dialog open={editIdentityOpen} onOpenChange={setEditIdentityOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSelectedIdentity(profile?.identity_preference || 'prefer-not-to-say')}
-                >
-                  <Edit2 className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Update Identity Preference</DialogTitle>
-                  <DialogDescription>
-                    Choose how you'd like to be addressed throughout the app
-                  </DialogDescription>
-                </DialogHeader>
-                <RadioGroup
-                  value={selectedIdentity}
-                  onValueChange={setSelectedIdentity}
-                  className="space-y-3 py-4"
-                >
-                  {IDENTITY_OPTIONS.map((option) => (
-                    <div
-                      key={option.value}
-                      className={cn(
-                        "flex items-center space-x-3 p-3 rounded-lg border-2 transition-all cursor-pointer",
-                        selectedIdentity === option.value
-                          ? "border-primary bg-primary/10"
-                          : "border-border hover:border-primary/50"
-                      )}
-                      onClick={() => setSelectedIdentity(option.value)}
-                    >
-                      <RadioGroupItem value={option.value} id={`profile-${option.value}`} />
-                      <Label htmlFor={`profile-${option.value}`} className="flex-1 cursor-pointer">
-                        <div className="font-semibold text-sm">{option.label}</div>
-                        <div className="text-xs text-muted-foreground">
-                          We'll call you: {option.title}
-                        </div>
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setEditIdentityOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleSaveIdentity}>
-                    Save Changes
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Stats Highlight Card */}
       <Card className="border-0 shadow-sm gradient-sage">

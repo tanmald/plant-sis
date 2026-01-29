@@ -40,7 +40,7 @@ export default function AITest() {
       <div>
         <h1 className="text-3xl font-bold mb-2">AI Analysis Test</h1>
         <p className="text-muted-foreground">
-          Test the PlantSis AI plant identification system
+          Test the PlantBestie AI plant identification system
         </p>
       </div>
 

@@ -12,13 +12,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { getPlantTitle } from "@/lib/utils";
+import { useAIQuota } from "@/hooks/useAIQuota";
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const { user } = useAuth();
   const { data: plants = [], isLoading, error, refetch } = usePlants();
   const { profile } = useUserProfile();
-  const plantTitle = getPlantTitle(profile?.identity_preference);
+  const { data: quota } = useAIQuota();
+  const plantTitle = getPlantTitle();
 
   // Fetch check-ins count this month
   const { data: checkInsCount = 0 } = useQuery({
@@ -175,8 +177,12 @@ export default function Dashboard() {
               <span className="text-lg">✨</span>
             </div>
             <div>
-              <p className="text-2xl font-bold font-display">3</p>
-              <p className="text-xs text-muted-foreground">AI IDs Left</p>
+              <p className="text-2xl font-bold font-display">
+                {quota?.subscription_tier === 'pro' ? '∞' : (quota?.remaining_analyses ?? 3)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {quota?.subscription_tier === 'pro' ? 'Unlimited AI' : 'AI IDs Left'}
+              </p>
             </div>
           </div>
         </div>
